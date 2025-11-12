@@ -53,6 +53,11 @@ bool c_photon::load( create_interface_fn interface_factory, create_interface_fn 
 		return false;
 	}
 
+	if ( util::get_module_handle( MODULE( "sar" ) ) ) {
+		photon->common->log_warn( "This plugin is incompatible with SAR, please restart your game without loading SAR.\n" );
+		return false;
+	}
+
 	if ( !signals::initialize( ) ) {
 		photon->common->log_warn( "Failed to initialize one or more signals.\n" );
 		return false;

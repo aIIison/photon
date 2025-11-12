@@ -47,19 +47,19 @@ e_return_action on_screen_size_changed( e_callback_type type, signal_params_t* p
 }
 
 bool signals::initialize( ) {
-	// photon->signal->create( "game_frame" )->with_parameters( { Pointer, Bool } )->in_module( MODULE( "server" ) )->in_interface( "ServerGameDLL005" )->from_vtable( 4 )->enable( );
-	// photon->signal->create( "frame" )->with_parameters( { Pointer } )->at_address( interfaces::engine )->from_vtable( OS( 5, 6 ) )->enable( );
-	photon->signal->create( "set_signon_state" )->with_parameters( { Pointer, Int32, Int32, Int32 } )->at_address( interfaces::client_state )->from_vtable( OS( 15, 36 ) )->enable( );
-	photon->signal->create( "paint" )->with_parameters( { Pointer, Int32 } )->in_module( MODULE( "engine" ) )->in_interface( "VEngineVGui001" )->from_vtable( OS( 14, 15 ) )->enable( );
-	photon->signal->create( "lock_cursor" )->with_parameters( { Pointer } )->at_address( interfaces::surface )->from_vtable( 65 )->enable( );
-	photon->signal->create( "in_key_event" )->with_parameters( { Pointer, Int32, Int32, String } )->in_module( MODULE( "client" ) )->in_interface( "VClient016" )->from_vtable( 20 )->enable( );
-	photon->signal->create( "update_button_state" )->with_parameters( { Pointer, Pointer } )->in_module( MODULE( "vgui2" ) )->in_interface( "VGUI_Input005" )->from_vtable( OS( 87, 88 ) )->enable( );
-	photon->signal->create( "on_screen_size_changed" )->with_parameters( { Pointer, Int32, Int32 } )->at_address( interfaces::surface )->from_vtable( 114 )->enable( );
+	// photon->signal->create( "CServerGameDLL::GameFrame" )->with_parameters( { Pointer, Bool } )->in_module( MODULE( "server" ) )->in_interface( "ServerGameDLL005" )->from_vtable( 4 )->enable( );
+	// photon->signal->create( "CEngine::Frame" )->with_parameters( { Pointer } )->at_address( interfaces::engine )->from_vtable( OS( 5, 6 ) )->enable( );
+	photon->signal->create( "CClientState::SetSignonState" )->with_parameters( { Pointer, Int32, Int32, Int32 } )->at_address( interfaces::client_state )->from_vtable( OS( 15, 36 ) )->enable( );
+	photon->signal->create( "CEngineVGui::Paint" )->with_parameters( { Pointer, Int32 } )->in_module( MODULE( "engine" ) )->in_interface( "VEngineVGui001" )->from_vtable( OS( 14, 15 ) )->enable( );
+	photon->signal->create( "CMatSystemSurface::LockCursor" )->with_parameters( { Pointer } )->at_address( interfaces::surface )->from_vtable( 65 )->enable( );
+	photon->signal->create( "CHLClient::IN_KeyEvent" )->with_parameters( { Pointer, Int32, Int32, String } )->in_module( MODULE( "client" ) )->in_interface( "VClient016" )->from_vtable( 20 )->enable( );
+	photon->signal->create( "CEngineVGui::UpdateButtonState" )->with_parameters( { Pointer, Pointer } )->in_module( MODULE( "vgui2" ) )->in_interface( "VGUI_Input005" )->from_vtable( OS( 87, 88 ) )->enable( );
+	photon->signal->create( "CMatSystemSurface::OnScreenSizeChanged" )->with_parameters( { Pointer, Int32, Int32 } )->at_address( interfaces::surface )->from_vtable( 114 )->enable( );
 
-	// photon->signal->get( "game_frame" )->add_callback( &game_frame );
-	// photon->signal->get( "frame" )->add_callback( &frame );
-	photon->signal->get( "set_signon_state" )->add_callback( e_callback_type::Post, &set_signon_state );
-	photon->signal->get( "on_screen_size_changed" )->add_callback( e_callback_type::Post, &on_screen_size_changed );
+	// photon->signal->get( "CServerGameDLL::GameFrame" )->add_callback( &game_frame );
+	// photon->signal->get( "CEngine::Frame" )->add_callback( &frame );
+	photon->signal->get( "CClientState::SetSignonState" )->add_callback( e_callback_type::Post, &set_signon_state );
+	photon->signal->get( "CMatSystemSurface::OnScreenSizeChanged" )->add_callback( e_callback_type::Post, &on_screen_size_changed );
 
 	return true;
 }

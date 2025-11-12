@@ -1,8 +1,10 @@
 #pragma once
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <thread>
 #include <vector>
 
 #ifdef _WIN32
@@ -24,14 +26,28 @@
 #include "math.h"
 #include "sdk/platform.h"
 
+#define PRINT_RED     "\x1b[31m"
+#define PRINT_GREEN   "\x1b[32m"
+#define PRINT_YELLOW  "\x1b[33m"
+#define PRINT_BLUE    "\x1b[34m"
+#define PRINT_MAGENTA "\x1b[35m"
+#define PRINT_CYAN    "\x1b[36m"
+#define PRINT_RESET   "\x1b[0m"
+
 namespace util {
 	namespace console {
-		void alloc( );
+		bool alloc( );
 		void free( );
+		void handler( );
 
 		template < typename... args_t >
 		void log( const char* fmt, const args_t&... args ) {
-			printf( fmt, args... );
+			printf( ( std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
+		}
+
+		template < typename... args_t >
+		void log_error( const char* fmt, const args_t&... args ) {
+			printf( ( PRINT_RED + std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
 		}
 	}  // namespace console
 

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <iostream>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,24 +17,81 @@
 #include <link.h>
 #endif
 
-void util::console::alloc( ) {
+std::atomic< bool > console_running{ false };
+std::thread         console_thread;
+
+bool util::console::alloc( ) {
 #ifdef _WIN32
+	if ( GetConsoleWindow( ) )
+		return false;
+
 	AllocConsole( );
 
-	freopen_s( reinterpret_cast< _iobuf** >( __acrt_iob_func( 0 ) ), "conin$", "r", static_cast< _iobuf* >( __acrt_iob_func( 0 ) ) );
-	freopen_s( reinterpret_cast< _iobuf** >( __acrt_iob_func( 1 ) ), "conout$", "w", static_cast< _iobuf* >( __acrt_iob_func( 1 ) ) );
-	freopen_s( reinterpret_cast< _iobuf** >( __acrt_iob_func( 2 ) ), "conout$", "w", static_cast< _iobuf* >( __acrt_iob_func( 2 ) ) );
+	FILE* file;
+	freopen_s( &file, "CONIN$", "r", stdin );
+	freopen_s( &file, "CONOUT$", "w", stdout );
+	freopen_s( &file, "CONOUT$", "w", stderr );
+
+	std::cin.clear( );
+	std::cout.clear( );
+	std::cerr.clear( );
+
+	// enable colors
+	HANDLE out = GetStdHandle( STD_OUTPUT_HANDLE );
+	HANDLE in  = GetStdHandle( STD_INPUT_HANDLE );
+
+	DWORD mode = 0;
+	GetConsoleMode( out, &mode );
+	mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_PROCESSED_OUTPUT;
+	SetConsoleMode( out, mode );
+
+	GetConsoleMode( in, &mode );
+	mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+	SetConsoleMode( in, mode );
+
+	SetConsoleTitleA( "photon debug" );
 #endif
+
+	log( PRINT_GREEN "[+] photon debug > type `help` for a list of commands.\n" );
+
+	console_running = true;
+	console_thread  = std::thread( handler );
+
+	return true;
 }
 
 void util::console::free( ) {
-#ifdef _WIN32
-	fclose( static_cast< _iobuf* >( __acrt_iob_func( 0 ) ) );
-	fclose( static_cast< _iobuf* >( __acrt_iob_func( 1 ) ) );
-	fclose( static_cast< _iobuf* >( __acrt_iob_func( 2 ) ) );
+	if ( console_running ) {
+		console_running = false;
 
+		if ( console_thread.joinable( ) )
+			console_thread.join( );
+	}
+
+#ifdef _WIN32
 	FreeConsole( );
 #endif
+}
+
+void util::console::handler( ) {
+	std::string input;
+	while ( console_running ) {
+		std::getline( std::cin, input );
+
+		if ( !console_running )
+			break;
+
+		if ( input == "help" ) {
+			log( "[>] list of commands:\n" );
+			log( "      clear - clear console.\n" );
+		} else if ( input == "clear" ) {
+#ifdef _WIN32
+			system( "cls" );
+#else
+			system( "clear" );
+#endif
+		}
+	}
 }
 
 static std::vector< util::module_info_t > g_module_info;
@@ -115,16 +173,16 @@ address_t util::get_interface( const char* module_name, const char* interface_na
 		result = fn( interface_name, nullptr );
 
 		if ( !result ) {
-			console::log( "[!] couldn't find interface %s in %s.\n", interface_name, module_name );
+			console::log_error( "[!] couldn't find interface %s in %s.\n", interface_name, module_name );
 			return nullptr;
 		}
 
-		console::log( "[+] found interface %s in %s at %p.\n", interface_name, module_name, result );
+		console::log( "[+] found interface " PRINT_YELLOW "%s" PRINT_RESET " in " PRINT_CYAN "%s [%p]" PRINT_RESET ".\n", interface_name, module_name, result );
 
 		return result;
 	}
 
-	console::log( "[!] couldn't find CreateInterface fn in %s.\n", module_name );
+	console::log_error( "[!] couldn't find CreateInterface fn in %s.\n", module_name );
 
 	return nullptr;
 }

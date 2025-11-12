@@ -44,6 +44,7 @@ enum class e_return_action : int32_t {
 	Supercede  // skip real function; use my return value
 };
 
+/* FIXME: THIS IS SO FUCKING UGLY I NEED TO FIGURE OUT A WAY TO MAKE THIS BETTER */
 struct signal_params_t {  // this shadows dyno::IHook
 	template < class T >
 	T get_arg( size_t index ) {
@@ -86,39 +87,36 @@ struct signal_params_t {  // this shadows dyno::IHook
 	}
 };
 
-class signal_t {
+class signal_builder_t {
 	friend class c_signal;
 
 private:
-	void*                      addr;
-	e_data_type                return_type;
-	e_callconv                 callconv;
-	std::vector< e_data_type > params;
+	void* signal;  // opaque
 
 public:
-	virtual signal_t* with_return_type( e_data_type type );
-	virtual signal_t* with_callconv( e_callconv callconv );
-	virtual signal_t* with_parameters( const std::vector< e_data_type >& params );
+	virtual signal_builder_t* with_return_type( e_data_type type );
+	virtual signal_builder_t* with_callconv( e_callconv callconv );
+	virtual signal_builder_t* with_parameters( const std::vector< e_data_type >& params );
 
-	virtual signal_t* in_module( const char* name );
-	virtual signal_t* in_interface( const char* name );
-	virtual signal_t* at_address( void* address );
-	virtual signal_t* from_vtable( size_t index );
-	virtual signal_t* from_pattern( const char* pattern );
+	virtual signal_builder_t* in_module( const char* name );
+	virtual signal_builder_t* in_interface( const char* name );
+	virtual signal_builder_t* at_address( void* address );
+	virtual signal_builder_t* from_vtable( size_t index );
+	virtual signal_builder_t* from_pattern( const char* pattern );
 
-	virtual signal_t* add_callback( e_callback_type type, void* fn );
-	virtual signal_t* remove_callback( e_callback_type type, void* fn );
+	virtual signal_builder_t* add_callback( e_callback_type type, void* fn );
+	virtual signal_builder_t* remove_callback( e_callback_type type, void* fn );
 
-	virtual signal_t* enable( );
-	virtual signal_t* disable( );
+	virtual signal_builder_t* enable( );
+	virtual signal_builder_t* disable( );
 };
 
 class c_signal {
 public:
-	virtual signal_t* create( const char* name );
-	virtual void      remove( const char* name );
-	virtual void      enable( signal_t* signal );
-	virtual void      disable( signal_t* signal );
-	virtual signal_t* get( const char* name );
-	virtual void      remove_all( );
+	virtual signal_builder_t* create( const char* name );
+	virtual void              remove( const char* name );
+	virtual void              enable( signal_builder_t* signal );
+	virtual void              disable( signal_builder_t* signal );
+	virtual signal_builder_t* get( const char* name );
+	virtual void              remove_all( );
 };

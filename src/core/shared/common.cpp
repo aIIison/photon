@@ -19,6 +19,7 @@ void c_common::log( const char* fmt, ... ) {
 	std::string str( buf );
 	free( buf );
 	interfaces::console->msg( str.c_str( ) );
+	util::console::log( "[+] %s", str.c_str( ) );
 }
 void c_common::log( const color_t& clr, const char* fmt, ... ) {
 	/* this sucks */
@@ -33,6 +34,7 @@ void c_common::log( const color_t& clr, const char* fmt, ... ) {
 	std::string str( buf );
 	free( buf );
 	interfaces::console->color_msg( clr, str.c_str( ) );
+	util::console::log( PRINT_GREEN "[+] %s", str.c_str( ) );
 }
 void c_common::log_warn( const char* fmt, ... ) {
 	/* this sucks */
@@ -47,6 +49,7 @@ void c_common::log_warn( const char* fmt, ... ) {
 	std::string str( buf );
 	free( buf );
 	interfaces::console->warning( str.c_str( ) );
+	util::console::log( PRINT_RED "[!] %s", str.c_str( ) );
 }
 void c_common::post_event( void* sender, const char* msg ) {
 	mods::post_event( sender, msg );

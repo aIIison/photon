@@ -5,7 +5,7 @@ e_return_action calc_view_model_lag( e_callback_type type, signal_params_t* para
 }
 
 bool signals::initialize( ) {
-	photon->signal->create( "calc_view_model_lag" )
+	photon->signal->create( "CBaseViewModel::CalcViewModelLag" )
 					->with_callconv( Thiscall )
 					->with_parameters( { Pointer, Pointer, Pointer, Pointer } )
 					->in_module( MODULE( "client" ) )
@@ -14,12 +14,12 @@ bool signals::initialize( ) {
 									"56 53 83 EC 24 8B 74 24 30 8B 5C 24 34 6A 00" ) )
 					->enable( );
 
-	photon->signal->get( "calc_view_model_lag" )->add_callback( e_callback_type::Pre, &calc_view_model_lag );
+	photon->signal->get( "CBaseViewModel::CalcViewModelLag" )->add_callback( e_callback_type::Pre, &calc_view_model_lag );
 
 	return true;
 }
 
 void signals::uninitialize( ) {
-	photon->signal->get( "calc_view_model_lag" )->remove_callback( e_callback_type::Pre, &calc_view_model_lag );
-	photon->signal->remove( "calc_view_model_lag" );
+	photon->signal->get( "CBaseViewModel::CalcViewModelLag" )->remove_callback( e_callback_type::Pre, &calc_view_model_lag );
+	photon->signal->remove( "CBaseViewModel::CalcViewModelLag" );
 }

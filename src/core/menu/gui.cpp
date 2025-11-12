@@ -129,10 +129,10 @@ bool gui::initialize( ) {
 	}
 	photon->render->load_texture_raw( "photon_hue_gradient", ( uint8_t* ) hue_tex, 1, tex_height );
 
-	photon->signal->get( "lock_cursor" )->add_callback( e_callback_type::Pre, &lock_cursor );
-	photon->signal->get( "paint" )->add_callback( e_callback_type::Post, &paint );
-	photon->signal->get( "in_key_event" )->add_callback( e_callback_type::Pre, &in_key_event );
-	photon->signal->get( "update_button_state" )->add_callback( e_callback_type::Pre, &update_button_state );
+	photon->signal->get( "CMatSystemSurface::LockCursor" )->add_callback( e_callback_type::Pre, &lock_cursor );
+	photon->signal->get( "CEngineVGui::Paint" )->add_callback( e_callback_type::Post, &paint );
+	photon->signal->get( "CHLClient::IN_KeyEvent" )->add_callback( e_callback_type::Pre, &in_key_event );
+	photon->signal->get( "CEngineVGui::UpdateButtonState" )->add_callback( e_callback_type::Pre, &update_button_state );
 
 	return true;
 }

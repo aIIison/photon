@@ -3,11 +3,11 @@
 #include "sdk/photon.h"
 #include "util/util.h"
 
-#define LOG_PTR( ptr )                              \
-	if ( ptr )                                         \
-		util::console::log( "[+] %s: %p.\n", #ptr, ptr ); \
-	else                                               \
-		util::console::log( "[!] %s is nullptr.\n", #ptr );
+#define LOG_PTR( ptr )                                                                                    \
+	if ( ptr )                                                                                               \
+		util::console::log( "[+] pointer " PRINT_YELLOW "%s" PRINT_CYAN " [%p]" PRINT_RESET ".\n", #ptr, ptr ); \
+	else                                                                                                     \
+		util::console::log( PRINT_RED "[!] %s is nullptr.\n", #ptr );
 
 bool interfaces::initialize( ) {
 	console = new c_console( util::get_module_handle( OS( "tier0.dll", "libtier0.so" ) ) );

@@ -3,99 +3,183 @@
 #include "sdk/signal.h"
 
 #include "sdk/photon.h"
+#include "util/util.h"
 
 #include <dynohook/conventions/x86_ms_thiscall.h>
 #include <dynohook/manager.h>
 #include <unordered_map>
 
-static std::unordered_map< std::string, signal_t* > signals;
+static std::unordered_map< std::string, signal_builder_t* > signals;
 
 static const char* module_name;
 
-signal_t* signal_t::with_return_type( e_data_type type ) {
-	this->return_type = type;
+struct signal_t {
+	void*                      addr;
+	e_data_type                return_type;
+	e_callconv                 callconv;
+	std::vector< e_data_type > params;
+};
+
+signal_builder_t* signal_builder_t::with_return_type( e_data_type type ) {
+	auto signal         = reinterpret_cast< signal_t* >( this->signal );
+	signal->return_type = type;
 	return this;
 }
-signal_t* signal_t::with_callconv( e_callconv callconv ) {
-	this->callconv = callconv;
+signal_builder_t* signal_builder_t::with_callconv( e_callconv callconv ) {
+#ifdef _WIN32
+	auto signal      = reinterpret_cast< signal_t* >( this->signal );
+	signal->callconv = callconv;
+#endif
 	return this;
 }
-signal_t* signal_t::with_parameters( const std::vector< e_data_type >& params ) {
-	this->params = params;
+signal_builder_t* signal_builder_t::with_parameters( const std::vector< e_data_type >& params ) {
+	auto signal    = reinterpret_cast< signal_t* >( this->signal );
+	signal->params = params;
 	return this;
 }
-signal_t* signal_t::in_module( const char* name ) {
-	module_name = name;
-	this->addr  = photon->common->get_module_handle( module_name );
+signal_builder_t* signal_builder_t::in_module( const char* name ) {
+	auto signal  = reinterpret_cast< signal_t* >( this->signal );
+	module_name  = name;
+	signal->addr = photon->common->get_module_handle( module_name );
 	return this;
 }
-signal_t* signal_t::in_interface( const char* name ) {
-	this->addr = photon->common->get_interface( module_name, name );
+signal_builder_t* signal_builder_t::in_interface( const char* name ) {
+	auto signal  = reinterpret_cast< signal_t* >( this->signal );
+	signal->addr = photon->common->get_interface( module_name, name );
 	return this;
 }
-signal_t* signal_t::at_address( void* address ) {
-	this->addr = address;
+signal_builder_t* signal_builder_t::at_address( void* address ) {
+	auto signal  = reinterpret_cast< signal_t* >( this->signal );
+	signal->addr = address;
 	return this;
 }
-signal_t* signal_t::from_vtable( size_t index ) {
-	this->addr     = reinterpret_cast< void* >( ( *reinterpret_cast< int** >( addr ) )[ index ] );
-	this->callconv = Thiscall;
+signal_builder_t* signal_builder_t::from_vtable( size_t index ) {
+	auto signal  = reinterpret_cast< signal_t* >( this->signal );
+	signal->addr = reinterpret_cast< void* >( ( *reinterpret_cast< int** >( signal->addr ) )[ index ] );
+#ifdef _WIN32
+	signal->callconv = Thiscall;
+#endif
 	return this;
 }
-signal_t* signal_t::from_pattern( const char* pattern ) {
-	this->addr = photon->common->pattern_scan( module_name, pattern );
+signal_builder_t* signal_builder_t::from_pattern( const char* pattern ) {
+	auto signal  = reinterpret_cast< signal_t* >( this->signal );
+	signal->addr = photon->common->pattern_scan( module_name, pattern );
 	return this;
 }
-signal_t* signal_t::add_callback( e_callback_type type, void* fn ) {
-	dyno::HookManager::Get( ).findDetour( addr )->addCallback( ( dyno::CallbackType ) type, ( dyno::CallbackHandler ) fn );
+signal_builder_t* signal_builder_t::add_callback( e_callback_type type, void* fn ) {
+	auto signal = reinterpret_cast< signal_t* >( this->signal );
+	dyno::HookManager::Get( ).findDetour( signal->addr )->addCallback( ( dyno::CallbackType ) type, ( dyno::CallbackHandler ) fn );
 	return this;
 }
-signal_t* signal_t::remove_callback( e_callback_type type, void* fn ) {
-	dyno::HookManager::Get( ).findDetour( addr )->removeCallback( ( dyno::CallbackType ) type, ( dyno::CallbackHandler ) fn );
+signal_builder_t* signal_builder_t::remove_callback( e_callback_type type, void* fn ) {
+	auto signal = reinterpret_cast< signal_t* >( this->signal );
+	dyno::HookManager::Get( ).findDetour( signal->addr )->removeCallback( ( dyno::CallbackType ) type, ( dyno::CallbackHandler ) fn );
 	return this;
 }
-signal_t* signal_t::enable( ) {
+signal_builder_t* signal_builder_t::enable( ) {
 	photon->signal->enable( this );
 	return this;
 }
-signal_t* signal_t::disable( ) {
+signal_builder_t* signal_builder_t::disable( ) {
 	photon->signal->disable( this );
 	return this;
 }
 
-signal_t* c_signal::create( const char* name ) {
-	auto signal = new signal_t( );
+signal_builder_t* c_signal::create( const char* name ) {
+	auto signal    = new signal_builder_t( );
+	signal->signal = new signal_t( );
 	signals.insert( std::make_pair( std::string( name ), signal ) );
 	return signal;
 }
 void c_signal::remove( const char* name ) {
-	get( name )->disable( );
-	delete get( name );
+	auto signal = get( name );
+	signal->disable( );
+	delete signal->signal;
+	delete signal;
 	signals.erase( name );
 }
-void c_signal::enable( signal_t* signal ) {
+void c_signal::enable( signal_builder_t* signal ) {
+	auto data = reinterpret_cast< signal_t* >( signal->signal );
+
 	std::vector< dyno::DataObject > params;
 
 	dyno::ConvFunc fn;
-	std::transform( signal->params.begin( ), signal->params.end( ), std::back_inserter( params ), []( e_data_type x ) { return ( dyno::DataType ) x; } );
-	switch ( signal->callconv ) {
+	std::transform( data->params.begin( ),
+	                data->params.end( ),
+	                std::back_inserter( params ),
+	                []( e_data_type x ) { return ( dyno::DataType ) x; } );
+	switch ( data->callconv ) {
 	case Cdecl:
-		fn = [ & ]( ) { return new dyno::x86MsCdecl( params, ( dyno::DataType ) signal->return_type ); };
+		fn = [ & ]( ) { return new dyno::x86MsCdecl( params, ( dyno::DataType ) data->return_type ); };
 		break;
 	case Thiscall:
-		fn = [ & ]( ) { return new dyno::x86MsThiscall( params, ( dyno::DataType ) signal->return_type ); };
+		fn = [ & ]( ) { return new dyno::x86MsThiscall( params, ( dyno::DataType ) data->return_type ); };
 		break;
 	case Stdcall:
-		fn = [ & ]( ) { return new dyno::x86MsStdcall( params, ( dyno::DataType ) signal->return_type ); };
+		fn = [ & ]( ) { return new dyno::x86MsStdcall( params, ( dyno::DataType ) data->return_type ); };
 		break;
 	};
 
-	dyno::HookManager::Get( ).hookDetour( signal->addr, fn );
+	dyno::HookManager::Get( ).hookDetour( data->addr, fn );
+
+	/* logging */
+	for ( auto it = signals.begin( ); it != signals.end( ); ++it ) {
+		if ( it->second == signal ) {
+			auto name = it->first;
+
+			auto type_str = []( e_data_type x ) {
+				return std::vector< std::string >{
+					"void",
+					"bool",
+					"int8",
+					"uint8",
+					"int16",
+					"uint16",
+					"int32",
+					"uint32",
+					"int64",
+					"uint64",
+					"float",
+					"double",
+					"pointer",
+					"string",
+					"wstring",
+					"m128",
+					"m256",
+					"m512",
+					"object"
+				}[ x ];
+			};
+			auto conv_str = []( e_callconv x ) {
+				return std::vector< std::string >{
+					"__cdecl",
+					"__stdcall",
+					"__thiscall"
+				}[ x ];
+			};
+
+			std::string fn_sig;
+			fn_sig += PRINT_MAGENTA + type_str( data->return_type ) + " ";
+			fn_sig += PRINT_BLUE + conv_str( data->callconv ) + PRINT_RESET " ";
+			fn_sig += name;
+
+			fn_sig += "( ";
+			for ( auto param : data->params ) {
+				fn_sig += PRINT_MAGENTA + type_str( param ) + PRINT_RESET ", ";
+			}
+			fn_sig.pop_back( );
+			fn_sig.pop_back( );
+			fn_sig += " )";
+
+			util::console::log( "[+] enabled signal " PRINT_CYAN "[%p]" PRINT_RESET " `%s`.\n", data->addr, fn_sig.c_str( ) );
+		}
+	}
 }
-void c_signal::disable( signal_t* signal ) {
-	dyno::HookManager::Get( ).unhookDetour( signal->addr );
+void c_signal::disable( signal_builder_t* signal ) {
+	auto data = reinterpret_cast< signal_t* >( signal->signal );
+	dyno::HookManager::Get( ).unhookDetour( data->addr );
 }
-signal_t* c_signal::get( const char* name ) {
+signal_builder_t* c_signal::get( const char* name ) {
 	return signals[ name ];
 }
 void c_signal::remove_all( ) {

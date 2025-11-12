@@ -51,12 +51,20 @@ static void photon_print( const c_command& args ) {
 	mods::print( );
 }
 
+static void photon_debug( const c_command& args ) {
+	if ( util::console::alloc( ) )
+		photon->common->log( { 0, 255, 0 }, "Enabled debug mode.\n" );
+	else
+		photon->common->log_warn( "Already in debug mode.\n" );
+}
+
 bool convars::initialize( ) {
 	photon->con->create_concmd( "photon_load", photon_load, "photon_load <mod name> - load a photon mod.\n" );
 	photon->con->create_concmd( "photon_unload", photon_unload, "photon_unload <mod name> - unload a photon mod.\n" );
 	photon->con->create_concmd( "photon_enable", photon_enable, "photon_enable <mod name> - enable a photon mod.\n" );
 	photon->con->create_concmd( "photon_disable", photon_disable, "photon_disable <mod name> - disable a photon mod.\n" );
 	photon->con->create_concmd( "photon_print", photon_print, "prints a list of all loaded photon mods.\n" );
+	photon->con->create_concmd( "photon_debug", photon_debug, "enables debug mode.\n" );
 
 	// fast loads
 	ui_loadingscreen_transition_time    = photon->con->find_con_var( "ui_loadingscreen_transition_time" );
