@@ -1,6 +1,6 @@
 #include "signals.h"
 
-e_return_action calc_view_model_lag( e_callback_type type, signal_params_t* params ) {
+e_return_action calc_view_model_lag( e_callback_type type, signal_context_t* ctx ) {
 	return e_return_action::Supercede;
 }
 

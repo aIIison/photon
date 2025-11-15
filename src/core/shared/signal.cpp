@@ -139,9 +139,9 @@ void c_signal::enable( signal_builder_t* signal ) {
 					"uint64_t",
 					"float",
 					"double",
-					"void *",
-					"char *",
-					"wchar_t *",
+					"void*",
+					"char*",
+					"wchar_t*",
 					"__m128",
 					"__m256",
 					"__m512",
@@ -192,4 +192,21 @@ signal_builder_t* c_signal::get( const char* name ) {
 void c_signal::remove_all( ) {
 	dyno::HookManager::Get( ).unhookAll( );
 	signals.clear( );
+}
+
+void* c_signal::get_arg( signal_context_t* ctx, size_t index ) {
+	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
+	return hook->getArgument< void* >( index );
+}
+void c_signal::set_arg( signal_context_t* ctx, size_t index, void* value ) {
+	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
+	return hook->setArgument< void* >( index, value );
+}
+void* c_signal::get_return( signal_context_t* ctx ) {
+	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
+	return hook->getReturn< void* >( );
+}
+void c_signal::set_return( signal_context_t* ctx, void* value ) {
+	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
+	return hook->setReturn< void* >( value );
 }

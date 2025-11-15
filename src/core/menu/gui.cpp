@@ -10,7 +10,7 @@
 #include "framework.h"
 
 // unlock the cursor from the game when menu is open
-e_return_action lock_cursor( e_callback_type type, signal_params_t* params ) {
+e_return_action lock_cursor( e_callback_type type, signal_context_t* ctx ) {
 	static void* input_ctx = interfaces::engine_client->get_input_context( 0 );
 
 	if ( gui::open || huds::edit ) {
@@ -26,8 +26,8 @@ e_return_action lock_cursor( e_callback_type type, signal_params_t* params ) {
 	}
 }
 
-e_return_action paint( e_callback_type type, signal_params_t* params ) {
-	auto paint_mode = params->get_arg< int >( 1 );
+e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
+	auto paint_mode = ( bool ) photon->signal->get_arg( ctx, 1 );
 
 	interfaces::surface->start_drawing( );
 
@@ -61,9 +61,9 @@ e_return_action paint( e_callback_type type, signal_params_t* params ) {
 }
 
 // block input to the game when photon's menu is open, only works in game, not in the menu
-e_return_action in_key_event( e_callback_type type, signal_params_t* params ) {
+e_return_action in_key_event( e_callback_type type, signal_context_t* ctx ) {
 	if ( gui::open || huds::edit ) {
-		params->set_return< bool >( false );
+		photon->signal->set_return( ctx, 0 );
 
 		return e_return_action::Supercede;
 	}
@@ -72,8 +72,8 @@ e_return_action in_key_event( e_callback_type type, signal_params_t* params ) {
 }
 
 // block input to the menu, vgui has its own input system for some reason, so we have to hook another function
-e_return_action update_button_state( e_callback_type type, signal_params_t* params ) {
-	void* ecx = params->get_arg< void* >( 0 );
+e_return_action update_button_state( e_callback_type type, signal_context_t* ctx ) {
+	void* ecx = photon->signal->get_arg( ctx, 0 );
 
 	if ( gui::open || huds::edit ) {
 		/*

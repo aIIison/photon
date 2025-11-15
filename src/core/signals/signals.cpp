@@ -25,8 +25,8 @@
 // 		photon->common->post_event( &plugin, "post_frame" );
 // }
 
-e_return_action set_signon_state( e_callback_type type, signal_params_t* params ) {
-	auto state = params->get_arg< int >( 1 );
+e_return_action set_signon_state( e_callback_type type, signal_context_t* ctx ) {
+	auto state = ( int ) photon->signal->get_arg( ctx, 1 );
 
 	// this is probably not the best way, i saw SAR do something similar but this needs further thought
 	if ( state == signonstate_full )
@@ -37,7 +37,7 @@ e_return_action set_signon_state( e_callback_type type, signal_params_t* params 
 	return e_return_action::Handled;
 }
 
-e_return_action on_screen_size_changed( e_callback_type type, signal_params_t* params ) {
+e_return_action on_screen_size_changed( e_callback_type type, signal_context_t* ctx ) {
 	photon->common->post_event( &plugin, "on_screen_size_changed" );
 
 	// recreate fonts

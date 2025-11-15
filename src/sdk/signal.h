@@ -44,26 +44,7 @@ enum class e_return_action : int32_t {
 	Supercede  // skip real function; use my return value
 };
 
-/* FIXME: THIS IS SO FUCKING UGLY I NEED TO FIGURE OUT A WAY TO MAKE THIS BETTER */
-struct signal_params_t {  // this shadows dyno::IHook
-	template < class T >
-	T get_arg( size_t index ) {
-		return ( ( dyno::IHook* ) this )->getArgument< T >( index );
-	}
-
-	template < class T >
-	void set_arg( size_t index, T value ) {
-	}
-
-	template < class T >
-	T get_return( ) {
-		return ( T ) 0;
-	}
-
-	template < class T >
-	void set_return( T value ) {
-	}
-};
+struct signal_context_t;
 
 class signal_builder_t {
 	friend class c_signal;
@@ -97,4 +78,8 @@ public:
 	virtual void              disable( signal_builder_t* signal );
 	virtual signal_builder_t* get( const char* name );
 	virtual void              remove_all( );
+	virtual void*             get_arg( signal_context_t* ctx, size_t index );
+	virtual void              set_arg( signal_context_t* ctx, size_t index, void* value );
+	virtual void*             get_return( signal_context_t* ctx );
+	virtual void              set_return( signal_context_t* ctx, void* value );
 };
