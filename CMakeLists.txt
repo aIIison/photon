@@ -71,6 +71,8 @@ set(photon_SOURCES
 	"src/core/configs/configs.h"
 	"src/core/convars/convars.cpp"
 	"src/core/convars/convars.h"
+	"src/core/debugger/debugger.cpp"
+	"src/core/debugger/debugger.h"
 	"src/core/huds/huds.cpp"
 	"src/core/huds/huds.h"
 	"src/core/interfaces/interfaces.cpp"

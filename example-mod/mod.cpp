@@ -28,8 +28,6 @@ bool c_photon_mod::load( photon_api::c_shared* photon ) {
 	if ( !config::initialize( ) )
 		return false;
 
-	photon->common->log( "example mod loaded.\n" );
-
 	// post example event
 	// this will look like: "example mod:load" for other mods
 	photon->common->post_event( &mod, "load" );
@@ -46,8 +44,6 @@ void c_photon_mod::unload( ) {
 	huds::uninitialize( );
 	convars::uninitialize( );
 	signals::uninitialize( );
-
-	photon->common->log( "example mod unloaded.\n" );
 }
 
 void c_photon_mod::on_event( const char* msg ) {

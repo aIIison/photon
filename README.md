@@ -9,7 +9,7 @@
 
 ### Mods
 - Install mods by placing them in the `photon` folder inside the Portal 2 directory.
-- Enable them from the menu that you can open by pressing <kbd>Insert</kbd>.
+- Enable them from the menu that you can open by pressing <kbd>RShift</kbd>.
 
 ## Development
 
@@ -108,15 +108,11 @@ photon_api::c_shared* photon;
 bool c_photon_mod::load( photon_api::c_shared* photon ) {
 	::photon = photon; // expose photon interface globally.
 
-	photon->common->log( "example mod loaded.\n" );
-
 	return true;
 }
 
 void c_photon_mod::unload( ) {
 	// unallocate stuff here etc.
-
-	photon->common->log( "example mod unloaded.\n" );
 }
 
 void c_photon_mod::on_event( const char* msg ) {

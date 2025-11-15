@@ -34,14 +34,16 @@ bool mods::load( const char* name ) {
 
 			mod_list.insert( std::make_pair( name, info ) );
 
+			util::console::log( "[+] loaded library `%s`.\n", name );
+
 			return true;
 		}
 	}
 
 #ifdef _WIN32
-	photon->common->log_warn( "Failed to load library (%lu).\n", GetLastError( ) );
+	photon->common->log_warn( "failed to load library `%s` (%lu).\n", name, GetLastError( ) );
 #else
-	photon->common->log_warn( "Failed to load library (%s).\n", dlerror( ) );
+	photon->common->log_warn( "failed to load library `%s` (%s).\n", name, dlerror( ) );
 #endif
 
 	return false;
@@ -104,6 +106,11 @@ bool mods::enable( mod_info_t* mod ) {
 		mod->is_loaded = true;
 	}
 
+	if ( result )
+		util::console::log( "[+] successfully enabled mod `%s`.\n", mod->ptr->get_info( ).name );
+	else
+		util::console::log_error( "[!] failed to enable mod `%s`.\n", mod->ptr->get_info( ).name );
+
 	return result;
 }
 
@@ -113,10 +120,12 @@ void mods::disable( mod_info_t* mod ) {
 
 	mod->is_loaded = false;
 	mod->ptr->unload( );
+
+	util::console::log( "[-] disabled mod `%s`.\n", mod->ptr->get_info( ).name );
 }
 
 void mods::print( ) {
-	photon->common->log( "Loaded photon mods (%d):\n", mod_list.size( ) );
+	photon->common->log( "loaded photon mods (%d):\n", mod_list.size( ) );
 	for ( const auto& mod : mod_list ) {
 		const char* status = mod.second.is_loaded ? "enabled" : "disabled";
 		const auto  info   = mod.second.ptr->get_info( );

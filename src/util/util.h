@@ -26,12 +26,14 @@
 #include "math.h"
 #include "sdk/platform.h"
 
-#define PRINT_RED     "\x1b[31m"
-#define PRINT_GREEN   "\x1b[32m"
-#define PRINT_YELLOW  "\x1b[33m"
-#define PRINT_BLUE    "\x1b[34m"
-#define PRINT_MAGENTA "\x1b[35m"
-#define PRINT_CYAN    "\x1b[36m"
+#define PRINT_BLACK   "\x1b[90m"
+#define PRINT_RED     "\x1b[91m"
+#define PRINT_GREEN   "\x1b[92m"
+#define PRINT_YELLOW  "\x1b[93m"
+#define PRINT_BLUE    "\x1b[94m"
+#define PRINT_MAGENTA "\x1b[95m"
+#define PRINT_CYAN    "\x1b[96m"
+#define PRINT_WHITE   "\x1b[97m"
 #define PRINT_RESET   "\x1b[0m"
 
 namespace util {
@@ -48,6 +50,14 @@ namespace util {
 		template < typename... args_t >
 		void log_error( const char* fmt, const args_t&... args ) {
 			printf( ( PRINT_RED + std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
+		}
+
+		__forceinline void clear( ) {
+#ifdef _WIN32
+			system( "cls" );
+#else
+			system( "clear" );
+#endif
 		}
 	}  // namespace console
 
@@ -95,6 +105,7 @@ namespace util {
 #endif
 	}
 
-	std::string ssprintf( const char* fmt, ... );
-	bool        replace( std::string& str, const std::string& from, const std::string& to );
+	std::string                ssprintf( const char* fmt, ... );
+	bool                       replace( std::string& str, const std::string& from, const std::string& to );
+	std::vector< std::string > split( const std::string& str );
 }  // namespace util

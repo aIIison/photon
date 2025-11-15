@@ -53,9 +53,9 @@ static void photon_print( const c_command& args ) {
 
 static void photon_debug( const c_command& args ) {
 	if ( util::console::alloc( ) )
-		photon->common->log( { 0, 255, 0 }, "Enabled debug mode.\n" );
+		photon->common->log( { 0, 255, 0 }, "enabled debug mode.\n" );
 	else
-		photon->common->log_warn( "Already in debug mode.\n" );
+		photon->common->log_warn( "already in debug mode.\n" );
 }
 
 bool convars::initialize( ) {

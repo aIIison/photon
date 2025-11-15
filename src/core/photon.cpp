@@ -19,7 +19,7 @@ photon_api::c_shared* photon;
 // prevent from loading the plugin twice (why doesnt source do this ???)
 static void plugin_load( const c_command& args ) {
 	if ( args.arg_c( ) >= 2 && strstr( args[ 1 ], "photon" ) )
-		photon->common->log_warn( "Photon is already loaded.\n" );
+		photon->common->log_warn( "photon is already loaded.\n" );
 	else
 		plugin_load( args );
 }
@@ -49,32 +49,32 @@ bool c_photon::load( create_interface_fn interface_factory, create_interface_fn 
 #endif
 
 	if ( !interfaces::initialize( ) ) {
-		photon->common->log_warn( "Failed to initialize one or more interfaces.\n" );
+		photon->common->log_warn( "failed to initialize one or more interfaces.\n" );
 		return false;
 	}
 
 	if ( util::get_module_handle( MODULE( "sar" ) ) ) {
-		photon->common->log_warn( "This plugin is incompatible with SAR, please restart your game without loading SAR.\n" );
+		photon->common->log_warn( "this plugin is incompatible with SAR, please restart your game without loading SAR.\n" );
 		return false;
 	}
 
 	if ( !signals::initialize( ) ) {
-		photon->common->log_warn( "Failed to initialize one or more signals.\n" );
+		photon->common->log_warn( "failed to initialize one or more signals.\n" );
 		return false;
 	}
 
 	if ( !convars::initialize( ) ) {
-		photon->common->log_warn( "Failed to initialize one or more convars.\n" );
+		photon->common->log_warn( "failed to initialize one or more convars.\n" );
 		return false;
 	}
 
 	if ( !configs::initialize( ) ) {
-		photon->common->log_warn( "Failed to initialize configs.\n" );
+		photon->common->log_warn( "failed to initialize configs.\n" );
 		return false;
 	}
 
 	if ( !gui::initialize( ) ) {
-		photon->common->log_warn( "Failed to initialize gui.\n" );
+		photon->common->log_warn( "failed to initialize gui.\n" );
 		return false;
 	}
 
@@ -84,10 +84,10 @@ bool c_photon::load( create_interface_fn interface_factory, create_interface_fn 
 	// only works when done early enough
 	interfaces::command_line->append_parm( "-background", "5" );
 
-	photon->common->log( { 0, 255, 0, 255 }, "Photon loaded.\n" );
+	photon->common->log( { 0, 255, 0, 255 }, "photon loaded.\n" );
 
 	if ( !mods::loadall( ) )
-		photon->common->log_warn( "Failed to load one or more mods.\n" );
+		photon->common->log_warn( "failed to load one or more mods.\n" );
 
 	return true;
 }
@@ -132,7 +132,7 @@ void c_photon::unload( ) {
 		interfaces::engine_client->cbuf_add_text( target, unload_cmd.c_str( ), SAFE_UNLOAD_DELAY );
 	}
 
-	photon->common->log( "Goodbye.\n" );
+	photon->common->log( "goodbye.\n" );
 
 	interfaces::uninitialize( );
 

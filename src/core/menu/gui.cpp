@@ -38,7 +38,7 @@ e_return_action paint( e_callback_type type, signal_params_t* params ) {
 
 		photon->common->post_event( &plugin, "paint" );
 
-		if ( photon->input->get_key_press( key_insert ) ) {
+		if ( photon->input->get_key_press( key_rshift ) ) {
 			gui::open  = !gui::open;
 			huds::edit = false;
 		}

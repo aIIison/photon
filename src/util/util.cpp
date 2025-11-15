@@ -1,11 +1,13 @@
 #include "util.h"
 
+#include "core/debugger/debugger.h"
 #include "memory.h"
 #include "string.h"
 
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,15 +83,26 @@ void util::console::handler( ) {
 		if ( !console_running )
 			break;
 
-		if ( input == "help" ) {
-			log( "[>] list of commands:\n" );
-			log( "      clear - clear console.\n" );
-		} else if ( input == "clear" ) {
-#ifdef _WIN32
-			system( "cls" );
-#else
-			system( "clear" );
-#endif
+		if ( !input.empty( ) ) {
+			const auto args = split( input );
+
+			if ( args[ 0 ] == "help" ) {
+				log( "[>] list of commands:\n" );
+				log( "        clear    - clear console.\n" );
+				log( "        d <addr> - disassemble code at address.\n" );
+			} else if ( args[ 0 ] == "clear" ) {
+				clear( );
+			} else if ( args[ 0 ] == "d" ) {
+				if ( args.size( ) > 1 ) {
+					uintptr_t addr;
+					sscanf( args[ 1 ].c_str( ), "%p", &addr );
+					debugger::disasm( addr );
+				} else {
+					log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", args[ 0 ].c_str( ) );
+				}
+			} else {
+				log( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", args[ 0 ].c_str( ) );
+			}
 		}
 	}
 }
@@ -255,4 +268,12 @@ bool util::replace( std::string& str, const std::string& from, const std::string
 		return false;
 	str.replace( start_pos, from.length( ), to );
 	return true;
+}
+
+std::vector< std::string > util::split( const std::string& str ) {
+	std::stringstream                    ss( str );
+	std::istream_iterator< std::string > begin( ss );
+	std::istream_iterator< std::string > end;
+	std::vector< std::string >           vec( begin, end );
+	return vec;
 }

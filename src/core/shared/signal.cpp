@@ -131,23 +131,23 @@ void c_signal::enable( signal_builder_t* signal ) {
 				return std::vector< std::string >{
 					"void",
 					"bool",
-					"int8",
-					"uint8",
-					"int16",
-					"uint16",
-					"int32",
-					"uint32",
-					"int64",
-					"uint64",
+					"int8_t",
+					"uint8_t",
+					"int16_t",
+					"uint16_t",
+					"int32_t",
+					"uint32_t",
+					"int64_t",
+					"uint64_t",
 					"float",
 					"double",
-					"pointer",
-					"string",
-					"wstring",
-					"m128",
-					"m256",
-					"m512",
-					"object"
+					"void *",
+					"char *",
+					"wchar_t *",
+					"__m128",
+					"__m256",
+					"__m512",
+					"object"  // ?
 				}[ x ];
 			};
 			auto conv_str = []( e_callconv x ) {
@@ -160,24 +160,33 @@ void c_signal::enable( signal_builder_t* signal ) {
 
 			std::string fn_sig;
 			fn_sig += PRINT_MAGENTA + type_str( data->return_type ) + " ";
-			fn_sig += PRINT_BLUE + conv_str( data->callconv ) + PRINT_RESET " ";
+			fn_sig += PRINT_BLUE + conv_str( data->callconv ) + PRINT_WHITE " ";
 			fn_sig += name;
 
 			fn_sig += "( ";
 			for ( auto param : data->params ) {
-				fn_sig += PRINT_MAGENTA + type_str( param ) + PRINT_RESET ", ";
+				fn_sig += PRINT_MAGENTA + type_str( param ) + PRINT_WHITE ", ";
 			}
 			fn_sig.pop_back( );
 			fn_sig.pop_back( );
-			fn_sig += " )";
+			fn_sig += " )" PRINT_RESET;
 
-			util::console::log( "[+] enabled signal " PRINT_CYAN "[%p]" PRINT_RESET " `%s`.\n", data->addr, fn_sig.c_str( ) );
+			util::console::log( "[+] enabled signal %s " PRINT_CYAN "[%p]" PRINT_RESET ".\n", fn_sig.c_str( ), data->addr );
 		}
 	}
 }
 void c_signal::disable( signal_builder_t* signal ) {
 	auto data = reinterpret_cast< signal_t* >( signal->signal );
 	dyno::HookManager::Get( ).unhookDetour( data->addr );
+
+	/* logging */
+	for ( auto it = signals.begin( ); it != signals.end( ); ++it ) {
+		if ( it->second == signal ) {
+			auto name = it->first;
+
+			util::console::log( "[-] disabled signal" PRINT_YELLOW " %s " PRINT_CYAN "[%p]" PRINT_RESET ".\n", name.c_str( ), data->addr );
+		}
+	}
 }
 signal_builder_t* c_signal::get( const char* name ) {
 	return signals[ name ];
