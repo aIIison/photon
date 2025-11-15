@@ -1,5 +1,3 @@
-#pragma once
-
 #include "sdk/signal.h"
 
 #include "sdk/photon.h"

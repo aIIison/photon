@@ -15,6 +15,7 @@ static std::string cur_mod;
 void configs::iterate_cfgs( ) {
 	cfgs.clear( );
 
+	std::filesystem::create_directory( "photon/cfgs" );
 	for ( const auto& entry : std::filesystem::directory_iterator( "photon/cfgs" ) ) {
 		auto path = entry.path( );
 		if ( path.extension( ) != ".json" )
@@ -118,12 +119,12 @@ void configs::end( ) {
 	cur_mod.clear( );
 }
 
-#define SERIALIZE( var_name, var )                   \
-	{                                                   \
-		if ( cur_mod.empty( ) )                            \
-			return;                                           \
-		cfg[ cur_mod ][ var_name ]  = var;                 \
-		ptrs[ cur_mod ][ var_name ] = ( uintptr_t ) & var; \
+#define SERIALIZE( var_name, var )                  \
+	{                                                  \
+		if ( cur_mod.empty( ) )                           \
+			return;                                          \
+		cfg[ cur_mod ][ var_name ]  = var;                \
+		ptrs[ cur_mod ][ var_name ] = ( uintptr_t ) &var; \
 	}
 
 void configs::serialize( const char* var_name, const char*& var ) SERIALIZE( var_name, var );

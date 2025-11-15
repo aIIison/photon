@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <stdarg.h>
 #include <stdio.h>
@@ -246,6 +247,8 @@ address_t util::pattern_scan( const char* module_name, const char* signature ) n
 		if ( found )
 			return &scan_bytes[ i ];
 	}
+
+	return nullptr;
 }
 
 std::string util::ssprintf( const char* fmt, ... ) {
