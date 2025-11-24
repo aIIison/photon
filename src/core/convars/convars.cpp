@@ -87,6 +87,7 @@ void convars::uninitialize( ) {
 	ui_loadingscreen_fadein_time->add_flag( FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN );
 	ui_loadingscreen_mintransition_time->add_flag( FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN );
 
+	photon->con->destruct_concmd( "photon_debug" );
 	photon->con->destruct_concmd( "photon_print" );
 	photon->con->destruct_concmd( "photon_disable" );
 	photon->con->destruct_concmd( "photon_enable" );

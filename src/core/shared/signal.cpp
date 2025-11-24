@@ -118,12 +118,17 @@ void c_signal::enable( signal_builder_t* signal ) {
 		break;
 	};
 
-	dyno::HookManager::Get( ).hookDetour( data->addr, fn );
+	auto hook = dyno::HookManager::Get( ).hookDetour( data->addr, fn );
 
 	/* logging */
 	for ( auto it = signals.begin( ); it != signals.end( ); ++it ) {
 		if ( it->second == signal ) {
 			auto name = it->first;
+
+			if ( !hook ) {
+				util::console::log_error( "[!] failed to enable signal %s [%p].\n", name.c_str( ), data->addr );
+				return;
+			}
 
 			auto type_str = []( e_data_type x ) {
 				return std::vector< std::string >{

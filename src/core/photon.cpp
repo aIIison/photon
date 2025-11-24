@@ -136,9 +136,7 @@ void c_photon::unload( ) {
 
 	interfaces::uninitialize( );
 
-#ifdef _DEBUG
 	util::console::free( );
-#endif
 
 	SAFE_DELETE( photon->config );
 	SAFE_DELETE( photon->menu );

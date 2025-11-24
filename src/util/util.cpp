@@ -68,7 +68,7 @@ void util::console::free( ) {
 		console_running = false;
 
 		if ( console_thread.joinable( ) )
-			console_thread.join( );
+			console_thread.detach( );
 	}
 
 #ifdef _WIN32
@@ -89,8 +89,9 @@ void util::console::handler( ) {
 
 			if ( args[ 0 ] == "help" ) {
 				log( "[>] list of commands:\n" );
-				log( "        clear    - clear console.\n" );
-				log( "        d <addr> - disassemble code at address.\n" );
+				log( "        clear                   - clear console.\n" );
+				log( "        d <addr>                - disassemble code at address.\n" );
+				log( "        ss <module> <signature> - signature scan.\n" );
 			} else if ( args[ 0 ] == "clear" ) {
 				clear( );
 			} else if ( args[ 0 ] == "d" ) {
@@ -98,6 +99,18 @@ void util::console::handler( ) {
 					uintptr_t addr;
 					sscanf( args[ 1 ].c_str( ), "%p", &addr );
 					debugger::disasm( addr );
+				} else {
+					log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", args[ 0 ].c_str( ) );
+				}
+			} else if ( args[ 0 ] == "ss" ) {
+				if ( args.size( ) > 2 ) {
+					std::string pattern;
+					for ( size_t i = 2; i < args.size( ); ++i ) {
+						pattern += args[ i ];
+						if ( i != args.size( ) - 1 )
+							pattern += " ";
+					}
+					util::pattern_scan( args[ 1 ].c_str( ), pattern.c_str( ) );
 				} else {
 					log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", args[ 0 ].c_str( ) );
 				}
@@ -244,10 +257,13 @@ address_t util::pattern_scan( const char* module_name, const char* signature ) n
 				break;
 			}
 		}
-		if ( found )
+		if ( found ) {
+			console::log( "[+] found signature " PRINT_YELLOW "%s" PRINT_RESET " in " PRINT_CYAN "%s [%p]" PRINT_RESET ".\n", signature, module_name, &scan_bytes[ i ] );
 			return &scan_bytes[ i ];
+		}
 	}
 
+	console::log( PRINT_RED "[!] couldn't find signature %s in %s.\n", signature, module_name );
 	return nullptr;
 }
 

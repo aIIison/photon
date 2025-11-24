@@ -27,7 +27,7 @@ e_return_action lock_cursor( e_callback_type type, signal_context_t* ctx ) {
 }
 
 e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
-	auto paint_mode = ( bool ) photon->signal->get_arg( ctx, 1 );
+	auto paint_mode = ( int ) photon->signal->get_arg( ctx, 1 );
 
 	interfaces::surface->start_drawing( );
 
