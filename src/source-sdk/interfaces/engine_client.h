@@ -11,6 +11,9 @@ public:
 	__forceinline void client_cmd( const char* cmd_string ) {
 		return util::call_virtual< 7, void >( this, cmd_string );
 	}
+	__forceinline bool con_is_visible( ) {
+		return util::call_virtual< 11, bool >( this );
+	}
 	__forceinline int get_local_player( ) {
 		return util::call_virtual< 12, int >( this );
 	}
