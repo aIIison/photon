@@ -3,6 +3,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <thread>
 #include <vector>
@@ -38,6 +39,17 @@
 
 namespace util {
 	namespace console {
+		class cmd_t {
+		public:
+			using args_t   = const std::vector< std::string >&;
+			using cmd_fn_t = std::function< bool( args_t ) >;
+
+			const char* helpstr;
+			cmd_fn_t    fn;
+
+			cmd_t( const char* name, const char* helpstr, cmd_fn_t fn );
+		};
+
 		bool alloc( );
 		void free( );
 		void handler( );
@@ -82,7 +94,7 @@ namespace util {
 
 	template < std::size_t index >
 	__forceinline address_t get_virtual( void* name ) {
-		return address_t( ( *static_cast< int** >( name ) )[ index ] );
+		return ( *static_cast< uintptr_t** >( name ) )[ index ];
 	}
 
 	template < typename t >

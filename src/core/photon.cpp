@@ -2,6 +2,7 @@
 
 #include "core/configs/configs.h"
 #include "core/convars/convars.h"
+#include "core/debugger/debugger.h"
 #include "core/interfaces/interfaces.h"
 #include "core/menu/gui.h"
 #include "core/mods/mods.h"
@@ -45,7 +46,7 @@ bool c_photon::load( create_interface_fn interface_factory, create_interface_fn 
 	photon->config = new c_config( );
 
 #ifdef _DEBUG
-	util::console::alloc( );
+	debugger::initialize( );
 #endif
 
 	if ( !interfaces::initialize( ) ) {
@@ -136,7 +137,7 @@ void c_photon::unload( ) {
 
 	interfaces::uninitialize( );
 
-	util::console::free( );
+	debugger::uninitialize( );
 
 	SAFE_DELETE( photon->config );
 	SAFE_DELETE( photon->menu );

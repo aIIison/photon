@@ -20,8 +20,28 @@
 #include <link.h>
 #endif
 
-std::atomic< bool > console_running{ false };
-std::thread         console_thread;
+static std::atomic< bool > console_running{ false };
+static std::thread         console_thread;
+
+static inline auto& console_cmds( ) {
+	static std::unordered_map< std::string, util::console::cmd_t* > cmds;
+	return cmds;
+}
+
+util::console::cmd_t::cmd_t( const char* name, const char* helpstr, cmd_fn_t fn ) {
+	this->helpstr = helpstr;
+	this->fn      = fn;
+
+	console_cmds( ).insert( { name, this } );
+}
+
+util::console::cmd_t help( "help", "help - list off all console commands.", []( util::console::cmd_t::args_t args ) -> bool {
+	util::console::log( "[>] list of commands:\n" );
+	for ( auto& [ _, cmd ] : console_cmds( ) ) {
+		util::console::log( "        %s\n", cmd->helpstr );
+	}
+	return true;
+} );
 
 bool util::console::alloc( ) {
 #ifdef _WIN32
@@ -51,11 +71,7 @@ bool util::console::alloc( ) {
 	GetConsoleMode( in, &mode );
 	mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
 	SetConsoleMode( in, mode );
-
-	SetConsoleTitleA( "photon debug" );
 #endif
-
-	log( PRINT_GREEN "[+] photon debug > type `help` for a list of commands.\n" );
 
 	console_running = true;
 	console_thread  = std::thread( handler );
@@ -86,36 +102,16 @@ void util::console::handler( ) {
 
 		if ( !input.empty( ) ) {
 			const auto args = split( input );
+			auto&      arg0 = args[ 0 ];
 
-			if ( args[ 0 ] == "help" ) {
-				log( "[>] list of commands:\n" );
-				log( "        clear                   - clear console.\n" );
-				log( "        d <addr>                - disassemble code at address.\n" );
-				log( "        ss <module> <signature> - signature scan.\n" );
-			} else if ( args[ 0 ] == "clear" ) {
-				clear( );
-			} else if ( args[ 0 ] == "d" ) {
-				if ( args.size( ) > 1 ) {
-					uintptr_t addr;
-					sscanf( args[ 1 ].c_str( ), "%p", &addr );
-					debugger::disasm( addr );
-				} else {
-					log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", args[ 0 ].c_str( ) );
-				}
-			} else if ( args[ 0 ] == "ss" ) {
-				if ( args.size( ) > 2 ) {
-					std::string pattern;
-					for ( size_t i = 2; i < args.size( ); ++i ) {
-						pattern += args[ i ];
-						if ( i != args.size( ) - 1 )
-							pattern += " ";
-					}
-					util::pattern_scan( args[ 1 ].c_str( ), pattern.c_str( ) );
-				} else {
-					log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", args[ 0 ].c_str( ) );
-				}
-			} else {
-				log( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", args[ 0 ].c_str( ) );
+			if ( !console_cmds( ).contains( arg0 ) )
+				return util::console::log( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", arg0.c_str( ) );
+
+			auto& cmd = console_cmds( )[ arg0 ];
+
+			if ( !cmd->fn( args ) ) {
+				util::console::log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", arg0.c_str( ) );
+				util::console::log( PRINT_RED "[!] %s\n", cmd->helpstr );
 			}
 		}
 	}
