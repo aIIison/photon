@@ -104,14 +104,15 @@ void util::console::handler( ) {
 			const auto args = split( input );
 			auto&      arg0 = args[ 0 ];
 
-			if ( !console_cmds( ).contains( arg0 ) )
-				return util::console::log( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", arg0.c_str( ) );
+			if ( console_cmds( ).contains( arg0 ) ) {
+				auto& cmd = console_cmds( )[ arg0 ];
 
-			auto& cmd = console_cmds( )[ arg0 ];
-
-			if ( !cmd->fn( args ) ) {
-				util::console::log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", arg0.c_str( ) );
-				util::console::log( PRINT_RED "[!] %s\n", cmd->helpstr );
+				if ( !cmd->fn( args ) ) {
+					util::console::log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", arg0.c_str( ) );
+					util::console::log( PRINT_RED "[!] %s\n", cmd->helpstr );
+				}
+			} else {
+				util::console::log( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", arg0.c_str( ) );
 			}
 		}
 	}
