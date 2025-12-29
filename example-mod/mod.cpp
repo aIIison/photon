@@ -74,4 +74,5 @@ void c_photon_mod::paint_menu( ) {
 	static const char* values[] = { "Value 1", "Value 2", "Value 3" };
 	photon->menu->combo( config::example_combo_value, values, 3, "Example Combo" );
 	photon->menu->multicombo( config::example_mcombo_value, values, 3, "Example Multicombo" );
+	photon->menu->textbox( config::example_textbox_value, "Example Textbox" );
 }

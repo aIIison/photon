@@ -8,6 +8,7 @@ bool config::initialize( ) {
 	photon->config->serialize( "example_color", example_color );
 	photon->config->serialize( "example_combo_value", example_combo_value );
 	photon->config->serialize( "example_mcombo_value", example_mcombo_value );
+	photon->config->serialize( "example_textbox_value", example_textbox_value );
 	photon->config->end( );
 
 	return true;

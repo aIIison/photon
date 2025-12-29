@@ -1,5 +1,6 @@
 #include "configs.h"
 
+#include "core/mods/mods.h"
 #include "util/util.h"
 
 #include <fstream>
@@ -35,7 +36,14 @@ void configs::uninitialize( ) {
 }
 
 void configs::save( const char* cfg_name ) {
+	for ( auto& [ name, mod ] : mods::mod_list ) {
+		cfg[ "modules" ][ name ] = mod.is_loaded;
+	}
+
 	for ( auto& [ module, obj ] : cfg.items( ) ) {
+		if ( module == "modules" )
+			continue;
+
 		for ( auto& [ key, value ] : obj.items( ) ) {
 			switch ( value.type( ) ) {
 			case value_t::array: /* array = color_t */ {
@@ -70,8 +78,17 @@ void configs::load( const char* cfg_name ) {
 	std::ifstream i( util::ssprintf( "photon/cfgs/%s.json", cfg_name ) );
 	i >> cfg;
 
+	for ( auto& [ name, mod ] : mods::mod_list ) {
+		bool enabled = cfg[ "modules" ][ name ].get< bool >( );
+
+		if ( enabled )
+			mods::enable( &mod );
+		else
+			mods::disable( &mod );
+	}
+
 	for ( auto& [ module, obj ] : cfg.items( ) ) {
-		if ( !ptrs.contains( module ) )
+		if ( !ptrs.contains( module ) || module == "modules" )
 			continue;
 
 		for ( auto& [ key, value ] : obj.items( ) ) {

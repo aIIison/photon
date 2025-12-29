@@ -35,10 +35,6 @@ util::console::cmd_t ss( "ss", "ss <module> <signature> - signature scan.", []( 
 	}
 } );
 
-// e_return_action fprintf_nop( e_callback_type type, signal_context_t* ctx ) {
-// 	return e_return_action::Supercede;
-// }
-
 void debugger::initialize( ) {
 	util::console::alloc( );
 
