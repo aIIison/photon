@@ -1,5 +1,6 @@
 #include "convars.h"
 
+#include "core/debugger/debugger.h"
 #include "core/interfaces/interfaces.h"
 #include "core/mods/mods.h"
 #include "sdk/photon.h"
@@ -52,7 +53,7 @@ static void photon_print( const c_command& args ) {
 }
 
 static void photon_debug( const c_command& args ) {
-	if ( util::console::alloc( ) )
+	if ( debugger::initialize( ) )
 		photon->common->log( { 0, 255, 0 }, "enabled debug mode.\n" );
 	else
 		photon->common->log_warn( "already in debug mode.\n" );

@@ -4,20 +4,14 @@
 
 #include <Zydis/Zydis.h>
 
-util::console::cmd_t clear( "clear", "clear - clear console.", []( util::console::cmd_t::args_t args ) -> bool {
-	util::console::clear( );
-	return true;
-} );
-
 util::console::cmd_t d( "d", "d <addr> - disassemble code at address.", []( util::console::cmd_t::args_t args ) -> bool {
 	if ( args.size( ) > 1 ) {
 		uintptr_t addr;
 		sscanf( args[ 1 ].c_str( ), "%p", &addr );
 		debugger::disasm( addr );
 		return true;
-	} else {
-		return false;
 	}
+	return false;
 } );
 
 util::console::cmd_t ss( "ss", "ss <module> <signature> - signature scan.", []( util::console::cmd_t::args_t args ) -> bool {
@@ -30,19 +24,20 @@ util::console::cmd_t ss( "ss", "ss <module> <signature> - signature scan.", []( 
 		}
 		util::pattern_scan( args[ 1 ].c_str( ), pattern.c_str( ) );
 		return true;
-	} else {
-		return false;
 	}
+	return false;
 } );
 
-void debugger::initialize( ) {
-	util::console::alloc( );
+bool debugger::initialize( ) {
+	auto ret = util::console::alloc( );
 
 #ifdef _WIN32
 	SetConsoleTitleA( "photon debug" );
 #endif
 
 	util::console::log( PRINT_GREEN "[+] photon debug > type `help` for a list of commands.\n" );
+
+	return ret;
 }
 
 void debugger::uninitialize( ) {
@@ -67,7 +62,7 @@ void debugger::disasm( uintptr_t addr ) {
 			hex_pos += snprintf( hex_buf + hex_pos, sizeof( hex_buf ) - hex_pos,
 			                     "%02X ", ( ( unsigned char* ) addr )[ i ] );
 		}
-		util::console::log( PRINT_CYAN "%p    " PRINT_BLUE "%-40s" PRINT_YELLOW "%s\n", addr, hex_buf, insn.text );
+		util::console::print( PRINT_CYAN "%p    " PRINT_BLUE "%-40s" PRINT_YELLOW "%s\n", addr, hex_buf, insn.text );
 
 		addr += insn.info.length;
 

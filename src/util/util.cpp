@@ -20,8 +20,9 @@
 #include <link.h>
 #endif
 
-static std::atomic< bool > console_running{ false };
-static std::thread         console_thread;
+static std::atomic< bool >   console_running{ false };
+static std::thread           console_thread;
+static util::console::view_t console_log_view;
 
 static inline auto& console_cmds( ) {
 	static std::unordered_map< std::string, util::console::cmd_t* > cmds;
@@ -35,10 +36,36 @@ util::console::cmd_t::cmd_t( const char* name, const char* helpstr, cmd_fn_t fn 
 	console_cmds( ).insert( { name, this } );
 }
 
+util::console::cmd_t v( "v", "v <idx> - select console view.", []( util::console::cmd_t::args_t args ) -> bool {
+	if ( args.size( ) > 1 ) {
+		int view = std::stoi( args[ 1 ] );
+
+		if ( view >= util::console::views.size( ) ) {
+			util::console::views.push_back( new util::console::view_t{ } );
+		}
+
+		util::console::cur_view = view;
+		util::console::render( );
+		return true;
+	}
+	return false;
+} );
+
+util::console::cmd_t clear( "clear", "clear - clear current console view.", []( util::console::cmd_t::args_t args ) -> bool {
+	if ( util::console::cur_view == 0 ) {
+		util::console::log_error( "[!] can't clear log view.\n" );
+		return true;
+	}
+
+	util::console::views[ util::console::cur_view ]->clear( );
+	util::console::render( true );
+	return true;
+} );
+
 util::console::cmd_t help( "help", "help - list off all console commands.", []( util::console::cmd_t::args_t args ) -> bool {
-	util::console::log( "[>] list of commands:\n" );
+	util::console::print( "[>] list of commands:\n" );
 	for ( auto& [ _, cmd ] : console_cmds( ) ) {
-		util::console::log( "        %s\n", cmd->helpstr );
+		util::console::print( "        %s\n", cmd->helpstr );
 	}
 	return true;
 } );
@@ -73,6 +100,8 @@ bool util::console::alloc( ) {
 	SetConsoleMode( in, mode );
 #endif
 
+	views.push_back( &console_log_view );
+
 	console_running = true;
 	console_thread  = std::thread( handler );
 
@@ -104,18 +133,36 @@ void util::console::handler( ) {
 			const auto args = split( input );
 			auto&      arg0 = args[ 0 ];
 
+			// HACK: save input too.
+			if ( arg0 != "v" )
+				views[ cur_view ]->push_back( input + "\n" );
+
 			if ( console_cmds( ).contains( arg0 ) ) {
 				auto& cmd = console_cmds( )[ arg0 ];
 
 				if ( !cmd->fn( args ) ) {
-					util::console::log( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", arg0.c_str( ) );
-					util::console::log( PRINT_RED "[!] %s\n", cmd->helpstr );
+					print( PRINT_RED "[!] wrong amount of arguments for command `%s`.\n", arg0.c_str( ) );
+					print( PRINT_RED "[!] %s\n", cmd->helpstr );
 				}
 			} else {
-				util::console::log( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", arg0.c_str( ) );
+				print( PRINT_RED "[!] unknown command `%s`, type `help` for a list of commands.\n", arg0.c_str( ) );
 			}
 		}
 	}
+}
+
+void util::console::render( bool force_redraw ) {
+	static int last_view{ -1 };
+
+	if ( force_redraw || cur_view != last_view ) {
+		clear( );
+		for ( const auto& ln : *views[ cur_view ] ) {
+			printf( "%s", ln.c_str( ) );
+		}
+	} else
+		printf( "%s", views[ cur_view ]->back( ).c_str( ) );
+
+	last_view = cur_view;
 }
 
 static std::vector< util::module_info_t > g_module_info;

@@ -38,41 +38,6 @@
 #define PRINT_RESET   "\x1b[0m"
 
 namespace util {
-	namespace console {
-		class cmd_t {
-		public:
-			using args_t   = const std::vector< std::string >&;
-			using cmd_fn_t = std::function< bool( args_t ) >;
-
-			const char* helpstr;
-			cmd_fn_t    fn;
-
-			cmd_t( const char* name, const char* helpstr, cmd_fn_t fn );
-		};
-
-		bool alloc( );
-		void free( );
-		void handler( );
-
-		template < typename... args_t >
-		void log( const char* fmt, const args_t&... args ) {
-			printf( ( std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
-		}
-
-		template < typename... args_t >
-		void log_error( const char* fmt, const args_t&... args ) {
-			printf( ( PRINT_RED + std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
-		}
-
-		__forceinline void clear( ) {
-#ifdef _WIN32
-			system( "cls" );
-#else
-			system( "clear" );
-#endif
-		}
-	}  // namespace console
-
 	struct module_info_t {
 		char           name[ MAX_PATH ];
 		char           path[ MAX_PATH ];
@@ -120,4 +85,63 @@ namespace util {
 	std::string                ssprintf( const char* fmt, ... );
 	bool                       replace( std::string& str, const std::string& from, const std::string& to );
 	std::vector< std::string > split( const std::string& str );
+
+	namespace console {
+		using view_t = std::vector< std::string >;
+		inline std::vector< view_t* > views;
+		inline int                    cur_view{ };
+
+		class cmd_t {
+		public:
+			using args_t   = const std::vector< std::string >&;
+			using cmd_fn_t = std::function< bool( args_t ) >;
+
+			const char* helpstr;
+			cmd_fn_t    fn;
+
+			cmd_t( const char* name, const char* helpstr, cmd_fn_t fn );
+		};
+
+		bool alloc( );
+		void free( );
+		void handler( );
+		void render( bool force_redraw = false );
+
+		template < typename... args_t >
+		void add_to_view( int view_idx, const char* fmt, const args_t&... args ) {
+			auto& view = views[ view_idx ];
+			if ( view ) {
+				view->push_back( ssprintf( ( std::string( fmt ) + PRINT_RESET ).c_str( ), args... ) );
+				// limit buffer size.
+				if ( view->size( ) > 1000 )
+					view->erase( view->begin( ) );
+
+				if ( cur_view == view_idx )
+					render( );
+			}
+		}
+
+		template < typename... args_t >
+		void log( const char* fmt, const args_t&... args ) {
+			add_to_view( 0, ( std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
+		}
+
+		template < typename... args_t >
+		void log_error( const char* fmt, const args_t&... args ) {
+			add_to_view( 0, ( PRINT_RED + std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
+		}
+
+		template < typename... args_t >
+		void print( const char* fmt, const args_t&... args ) {
+			add_to_view( cur_view, ( std::string( fmt ) + PRINT_RESET ).c_str( ), args... );
+		}
+
+		__forceinline void clear( ) {
+#ifdef _WIN32
+			system( "cls" );
+#else
+			system( "clear" );
+#endif
+		}
+	}  // namespace console
 }  // namespace util
