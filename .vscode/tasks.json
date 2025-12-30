@@ -6,9 +6,13 @@
             "label": "CMake: build",
             "command": "build",
             "targets": [
-                "photon"
+                "all"
             ],
             "group": "build",
+            "problemMatcher": [
+                "$gcc",
+                "$msCompile"
+            ]
         },
         {
             "type": "cmake",

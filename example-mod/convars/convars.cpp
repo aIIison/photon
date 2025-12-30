@@ -7,11 +7,11 @@ static void example_command( const c_command& args ) {
 }
 
 bool convars::initialize( ) {
-	photon->con->create_concmd( "example_command", example_command, "prints \"hey!\" to the console.\n" );
+	photon->con->create_cmd( "example_command", example_command, "prints \"hey!\" to the console.\n" );
 
 	return true;
 }
 
 void convars::uninitialize( ) {
-	photon->con->destruct_concmd( "example_command" );
+	photon->con->destruct_cmd( "example_command" );
 }

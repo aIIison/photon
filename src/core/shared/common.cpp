@@ -76,7 +76,7 @@ bool c_common::is_coop( ) {
 	if ( *interfaces::game_rules )
 		return ( *interfaces::game_rules )->is_multiplayer( );
 
-	static auto sv_portal_players = photon->con->find_con_var( "sv_portal_players" );
+	static auto sv_portal_players = photon->con->find_var( "sv_portal_players" );
 	return sv_portal_players->get_int( ) == 2;
 }
 bool c_common::is_orange( ) {

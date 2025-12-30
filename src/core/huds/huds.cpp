@@ -174,7 +174,7 @@ void huds::draw( ) {
 
 		if ( hud->is_splitscreen( ) && photon->common->is_splitscreen( ) ) {
 			const auto  screen_size      = photon->render->get_screen_size( );
-			static auto ss_verticalsplit = photon->con->find_con_var( "ss_verticalsplit" );
+			static auto ss_verticalsplit = photon->con->find_var( "ss_verticalsplit" );
 
 			auto axis   = 1 - ss_verticalsplit->get_int( );
 			auto offset = photon->render->normalize( screen_size / 2 )[ axis ];

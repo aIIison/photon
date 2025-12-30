@@ -6,71 +6,71 @@
 #include "sdk/photon.h"
 #include "util/util.h"
 
-static std::unordered_map< std::string, con_command* >          concmds;
+static std::unordered_map< std::string, con_command* >          cmds;
 static std::unordered_map< std::string, fn_command_callback_t > hooked_cbks;
 
-con_command* c_con::create_concmd( const char* name, fn_command_callback_t cbk, const char* help_string, int flags ) {
+con_command* c_con::create_cmd( const char* name, fn_command_callback_t cbk, const char* help_string, int flags ) {
 	// use the game's memory allocator
-	auto concmd = reinterpret_cast< con_command* >( interfaces::mem_alloc->alloc( sizeof( con_command ) ) );
-	memset( concmd, 0, sizeof( con_command ) );
+	auto cmd = reinterpret_cast< con_command* >( interfaces::mem_alloc->alloc( sizeof( con_command ) ) );
+	memset( cmd, 0, sizeof( con_command ) );
 
 	// steal vtable from the game
-	concmd->vtable = interfaces::cvar->find_command_base( "listdemo" )->vtable;
+	cmd->vtable = interfaces::cvar->find_command_base( "listdemo" )->vtable;
 
-	concmd->name                = name;
-	concmd->fn_command_callback = cbk;
-	concmd->help_string         = help_string;
-	concmd->flags               = flags;
+	cmd->name                = name;
+	cmd->fn_command_callback = cbk;
+	cmd->help_string         = help_string;
+	cmd->flags               = flags;
 
 	// TODO: implement command completion
-	concmd->fn_completion_callback           = 0;
-	concmd->has_completion_callback          = false;
-	concmd->using_new_command_callback       = true;
-	concmd->using_command_callback_interface = false;
+	cmd->fn_completion_callback           = 0;
+	cmd->has_completion_callback          = false;
+	cmd->using_new_command_callback       = true;
+	cmd->using_command_callback_interface = false;
 
-	interfaces::cvar->register_con_command( concmd );
+	interfaces::cvar->register_con_command( cmd );
 
-	concmds.insert( std::make_pair( name, concmd ) );
+	cmds.insert( std::make_pair( name, cmd ) );
 
-	return concmd;
+	return cmd;
 }
-void c_con::destruct_concmd( const char* name ) {
-	if ( !concmds.count( name ) )
+void c_con::destruct_cmd( const char* name ) {
+	if ( !cmds.count( name ) )
 		return;
 
-	auto concmd = concmds[ name ];
+	auto cmd = cmds[ name ];
 
-	interfaces::cvar->unregister_con_command( concmd );
+	interfaces::cvar->unregister_con_command( cmd );
 
-	interfaces::mem_alloc->free( concmd );
+	interfaces::mem_alloc->free( cmd );
 
-	concmds.erase( name );
+	cmds.erase( name );
 }
 
 void c_con::hook_cmd( const char* name, fn_command_callback_t detour ) {
-	auto concmd = reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
+	auto cmd = reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
 
-	if ( !concmd )
+	if ( !cmd )
 		return;
 
-	hooked_cbks.insert( std::make_pair( name, concmd->fn_command_callback ) );
-	concmd->fn_command_callback = detour;
+	hooked_cbks.insert( std::make_pair( name, cmd->fn_command_callback ) );
+	cmd->fn_command_callback = detour;
 }
 void c_con::unhook_cmd( const char* name ) {
-	auto concmd   = reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
+	auto cmd      = reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
 	auto original = hooked_cbks[ name ];
 	hooked_cbks.erase( name );
 
-	if ( !concmd || !original )
+	if ( !cmd || !original )
 		return;
 
-	concmd->fn_command_callback = original;
+	cmd->fn_command_callback = original;
 }
 
-con_var* c_con::find_con_var( const char* name ) {
+con_var* c_con::find_var( const char* name ) {
 	return reinterpret_cast< con_var* >( interfaces::cvar->find_command_base( name ) );
 }
 
-con_command* c_con::find_con_command( const char* name ) {
+con_command* c_con::find_cmd( const char* name ) {
 	return reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
 }
