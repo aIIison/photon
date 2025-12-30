@@ -88,7 +88,7 @@ namespace util {
 
 	namespace console {
 		using view_t = std::vector< std::string >;
-		inline std::vector< view_t* > views;
+		inline std::vector< view_t* > views{ new view_t{} };
 		inline int                    cur_view{ };
 
 		class cmd_t {

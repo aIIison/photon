@@ -20,9 +20,8 @@
 #include <link.h>
 #endif
 
-static std::atomic< bool >   console_running{ false };
-static std::thread           console_thread;
-static util::console::view_t console_log_view;
+static std::atomic< bool > console_running{ false };
+static std::thread         console_thread;
 
 static inline auto& console_cmds( ) {
 	static std::unordered_map< std::string, util::console::cmd_t* > cmds;
@@ -99,8 +98,6 @@ bool util::console::alloc( ) {
 	mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
 	SetConsoleMode( in, mode );
 #endif
-
-	views.push_back( &console_log_view );
 
 	console_running = true;
 	console_thread  = std::thread( handler );

@@ -73,7 +73,7 @@ bool c_common::is_coop( ) {
 	if ( !strlen( get_current_map( ) ) )
 		return false;
 
-	if ( *interfaces::game_rules )
+	if ( interfaces::game_rules && *interfaces::game_rules )
 		return ( *interfaces::game_rules )->is_multiplayer( );
 
 	static auto sv_portal_players = photon->con->find_var( "sv_portal_players" );

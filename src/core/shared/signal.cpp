@@ -14,7 +14,7 @@ static const char* module_name;
 struct signal_t {
 	void*                      addr;
 	e_data_type                return_type;
-	e_callconv                 callconv;
+	e_callconv                 callconv{ };
 	std::vector< e_data_type > params;
 };
 
