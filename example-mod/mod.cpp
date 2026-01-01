@@ -56,11 +56,11 @@ void c_photon_mod::on_event( const char* msg ) {
 }
 
 photon_api::mod_info_t c_photon_mod::get_info( ) {
-	photon_api::mod_info_t info;
-	info.name    = "Example Mod";
-	info.author  = "hero";
-	info.version = "0.0.1";
-	return info;
+	return {
+		.name    = "Example Mod",
+		.author  = "hero",
+		.version = "0.0.1"
+	};
 }
 
 void c_photon_mod::paint_menu( ) {

@@ -104,7 +104,8 @@ bool mods::enable( mod_info_t* mod ) {
 	if ( !mod->is_loaded ) {
 		result         = mod->ptr->load( photon );
 		mod->is_loaded = true;
-	}
+	} else
+		return false;
 
 	if ( result )
 		util::console::log( "[+] successfully enabled mod `%s`.\n", mod->ptr->get_info( ).name );

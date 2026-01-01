@@ -97,6 +97,14 @@ bool util::console::alloc( ) {
 	GetConsoleMode( in, &mode );
 	mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
 	SetConsoleMode( in, mode );
+#else
+	if ( !isatty( STDIN_FILENO ) || !isatty( STDOUT_FILENO ) ) {
+		return false;  // no terminal attached.
+	}
+
+	std::cin.clear( );
+	std::cout.clear( );
+	std::cerr.clear( );
 #endif
 
 	console_running = true;
