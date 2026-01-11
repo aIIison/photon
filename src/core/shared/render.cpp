@@ -57,7 +57,7 @@ void c_render::draw_rounded_rect( int x, int y, int w, int h, color_t color, int
 
 	draw_polygon( 4 * rounding * 4, verts, color );
 
-	delete verts;
+	delete[] verts;
 }
 
 void c_render::draw_circle( int x, int y, int radius, color_t color ) {
