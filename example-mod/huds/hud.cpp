@@ -5,13 +5,13 @@
 c_example_hud* ex_hud;
 
 bool huds::initialize( ) {
-	photon->hud->reg( ex_hud = new c_example_hud( ) );
+	photon->hud->reg( "example_hud", ex_hud = new c_example_hud( ) );
 
 	return true;
 }
 
 void huds::uninitialize( ) {
-	photon->hud->unreg( ex_hud );
+	photon->hud->unreg( "example_hud" );
 }
 
 void c_example_hud::draw( ) {

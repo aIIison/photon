@@ -1,5 +1,6 @@
 #include "configs.h"
 
+#include "core/huds/huds.h"
 #include "core/mods/mods.h"
 #include "util/util.h"
 
@@ -36,10 +37,18 @@ void configs::uninitialize( ) {
 }
 
 void configs::save( const char* cfg_name ) {
+	// save loaded modules.
 	for ( auto& [ name, mod ] : mods::mod_list ) {
 		cfg[ "modules" ][ name ] = mod.is_loaded;
 	}
 
+	// save hud layout.
+	for ( auto& [ name, hud ] : huds::huds ) {
+		cfg[ "huds" ][ name ][ "x" ] = hud->pos.x;
+		cfg[ "huds" ][ name ][ "y" ] = hud->pos.y;
+	}
+
+	// save module settings.
 	for ( auto& [ module, obj ] : cfg.items( ) ) {
 		if ( module == "modules" )
 			continue;
@@ -78,6 +87,7 @@ void configs::load( const char* cfg_name ) {
 	std::ifstream i( util::ssprintf( "photon/cfgs/%s.json", cfg_name ) );
 	i >> cfg;
 
+	// load saved modules.
 	for ( auto& [ name, mod ] : mods::mod_list ) {
 		bool enabled = cfg[ "modules" ][ name ].get< bool >( );
 
@@ -87,6 +97,13 @@ void configs::load( const char* cfg_name ) {
 			mods::disable( &mod );
 	}
 
+	// load hud layout.
+	for ( auto& [ name, hud ] : huds::huds ) {
+		hud->pos.x = cfg[ "huds" ][ name ][ "x" ].get< float >( );
+		hud->pos.y = cfg[ "huds" ][ name ][ "y" ].get< float >( );
+	}
+
+	// load module settings.
 	for ( auto& [ module, obj ] : cfg.items( ) ) {
 		if ( !ptrs.contains( module ) || module == "modules" )
 			continue;

@@ -19,8 +19,8 @@ namespace photon_api {
 
 class c_hud {
 public:
-	virtual void reg( photon_api::i_hud* hud );    // register a hud component by pointer.
-	virtual void unreg( photon_api::i_hud* hud );  // unregister a hud component by pointer.
+	virtual void reg( const char* name, photon_api::i_hud* hud );
+	virtual void unreg( const char* name );
 
 	virtual void draw_begin( photon_api::i_hud* hud );
 	virtual void draw_end( );

@@ -6,14 +6,11 @@
 #include <cmath>
 #include <cstddef>
 
-void c_hud::reg( photon_api::i_hud* hud ) {
-	huds::huds.push_back( hud );
+void c_hud::reg( const char* name, photon_api::i_hud* hud ) {
+	huds::huds.insert( { name, hud } );
 }
-void c_hud::unreg( photon_api::i_hud* hud ) {
-	for ( std::size_t i = 0; i < huds::huds.size( ); ++i ) {
-		if ( huds::huds[ i ] == hud )
-			huds::huds.erase( huds::huds.begin( ) + i );
-	}
+void c_hud::unreg( const char* name ) {
+	huds::huds.erase( name );
 }
 
 static photon_api::i_hud* cur_hud;

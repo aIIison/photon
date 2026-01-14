@@ -124,7 +124,7 @@ static void align_hud_element( photon_api::i_hud* hud ) {
 	/*
 	 * alignment with other hud elements
 	 */
-	for ( const auto& other_hud : huds::huds ) {
+	for ( const auto& [ _, other_hud ] : huds::huds ) {
 		if ( hud == other_hud )
 			continue;
 
@@ -170,7 +170,7 @@ static void align_hud_element( photon_api::i_hud* hud ) {
 }
 
 void huds::draw( ) {
-	for ( const auto& hud : huds ) {
+	for ( const auto& [ _, hud ] : huds ) {
 		hud->draw( );
 
 		if ( hud->is_splitscreen( ) && photon->common->is_splitscreen( ) ) {
@@ -197,7 +197,7 @@ void huds::draw_ui( ) {
 	static vec2_t grab_pos;
 
 	// check if clicking on a hud.
-	for ( const auto& hud : huds ) {
+	for ( const auto& [ _, hud ] : huds ) {
 		const auto pos = get_abs_pos( hud );
 
 		if ( photon->input->is_cursor_in_area( pos.x, pos.y, pos.x + hud->bounds.x, pos.y + hud->bounds.y ) ) {
