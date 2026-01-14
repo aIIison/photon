@@ -6,24 +6,24 @@
 
 static std::unordered_map< std::string, int > texture_ids;
 
-void c_render::draw_filled_rect( int x, int y, int w, int h, color_t color ) {
+void c_render::draw_filled_rect( int x, int y, int w, int h, const color_t& color ) {
 	interfaces::surface->draw_set_color( color.r, color.g, color.b, color.a );
 	interfaces::surface->draw_filled_rect( x, y, x + w, y + h );
 }
 
-void c_render::draw_outlined_rect( int x, int y, int w, int h, color_t color, int stroke_width ) {
+void c_render::draw_outlined_rect( int x, int y, int w, int h, const color_t& color, int stroke_width ) {
 	interfaces::surface->draw_set_color( color.r, color.g, color.b, color.a );
 	for ( int i = 0; i < stroke_width; ++i ) {
 		interfaces::surface->draw_outlined_rect( x - i, y - i, x + w + i, y + h + i );
 	}
 }
 
-void c_render::draw_line( int x, int y, int w, int h, color_t color ) {
+void c_render::draw_line( int x, int y, int w, int h, const color_t& color ) {
 	interfaces::surface->draw_set_color( color.r, color.g, color.b, color.a );
 	interfaces::surface->draw_line( x, y, x + w, y + h );
 }
 
-void c_render::draw_polygon( int n, vertex_t* vertices, color_t color ) {
+void c_render::draw_polygon( int n, vertex_t* vertices, const color_t& color ) {
 	// create plain white texture
 	static int     plain_tex = interfaces::surface->create_new_texture_id( true );
 	static uint8_t rgba[ 4 ] = { 255, 255, 255, 255 };
@@ -35,7 +35,7 @@ void c_render::draw_polygon( int n, vertex_t* vertices, color_t color ) {
 	interfaces::surface->draw_textured_polygon( n, vertices );
 }
 
-void c_render::draw_rounded_rect( int x, int y, int w, int h, color_t color, int rounding ) {
+void c_render::draw_rounded_rect( int x, int y, int w, int h, const color_t& color, int rounding ) {
 	if ( rounding < 2 )
 		return;
 
@@ -63,7 +63,7 @@ void c_render::draw_rounded_rect( int x, int y, int w, int h, color_t color, int
 	delete[] verts;
 }
 
-void c_render::draw_circle( int x, int y, int radius, color_t color ) {
+void c_render::draw_circle( int x, int y, int radius, const color_t& color ) {
 	vertex_t verts[ 360 ];
 	for ( int i = 0; i < 360; ++i ) {
 		auto& pos = verts[ i ].position;
@@ -77,7 +77,7 @@ void c_render::draw_circle( int x, int y, int radius, color_t color ) {
 	draw_polygon( 360, verts, color );
 }
 
-void c_render::draw_text( int x, int y, h_font font, color_t color, bool center, const char* text ) {
+void c_render::draw_text( int x, int y, h_font font, const color_t& color, bool center, const char* text ) {
 	int text_x = x;
 	int text_y = y;
 
@@ -89,7 +89,7 @@ void c_render::draw_text( int x, int y, h_font font, color_t color, bool center,
 	interfaces::surface->draw_colored_text( font, text_x, text_y, color.r, color.g, color.b, color.a, text );
 }
 
-void c_render::draw_texture( int x, int y, int w, int h, const char* texture, color_t color ) {
+void c_render::draw_texture( int x, int y, int w, int h, const char* texture, const color_t& color ) {
 	// check if texture already exists
 	int id = interfaces::surface->draw_get_texture_id( texture );
 	if ( id < 1 ) {
@@ -108,7 +108,7 @@ void c_render::draw_texture( int x, int y, int w, int h, const char* texture, co
 	interfaces::surface->draw_textured_rect( x, y, x + w, y + h );
 }
 
-void c_render::draw_gradient( int x, int y, int w, int h, color_t color1, color_t color2, bool horizontal ) {
+void c_render::draw_gradient( int x, int y, int w, int h, const color_t& color1, const color_t& color2, bool horizontal ) {
 	interfaces::surface->draw_set_color( color1.r, color1.g, color1.b, color1.a );
 	interfaces::surface->draw_filled_rect( x, y, x + w, y + h );
 
