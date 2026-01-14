@@ -1,5 +1,6 @@
 #include "huds.h"
 
+#include "core/menu/framework.h"
 #include "sdk/photon.h"
 #include "util/util.h"
 
@@ -25,7 +26,7 @@ static vec2_t get_abs_pos( photon_api::i_hud* hud ) {
 	return pos - anchor;
 }
 
-static void set_abs_pos( photon_api::i_hud* hud, vec2_t pos ) {
+static void set_abs_pos( photon_api::i_hud* hud, const vec2_t& pos ) {
 	const auto screen_size = photon->render->get_screen_size( );
 
 	const auto anchor = hud->anchor * hud->bounds;
@@ -195,9 +196,8 @@ void huds::draw_ui( ) {
 
 	static vec2_t grab_pos;
 
+	// check if clicking on a hud.
 	for ( const auto& hud : huds ) {
-		vec2_t orig_cur_pos;
-
 		const auto pos = get_abs_pos( hud );
 
 		if ( photon->input->is_cursor_in_area( pos.x, pos.y, pos.x + hud->bounds.x, pos.y + hud->bounds.y ) ) {
@@ -211,6 +211,7 @@ void huds::draw_ui( ) {
 		}
 	}
 
+	// moving around hud.
 	if ( cur_hud ) {
 		if ( photon->input->get_key_held( mouse_left ) ) {
 			const auto hud = cur_hud;
@@ -225,5 +226,13 @@ void huds::draw_ui( ) {
 		if ( photon->input->get_key_release( mouse_left ) ) {
 			cur_hud = nullptr;
 		}
+	}
+
+	// draw little hint when editing hud layout.
+	{
+		const vec2_t pos{ screen_size.x - 8, 8 };
+
+		photon->render->draw_text( pos.x, pos.y, gui::framework::fonts::bigtitle, { 255, 255, 255, 64 }, 2, "Currently editing HUD layout." );
+		photon->render->draw_text( pos.x, pos.y + 28, gui::framework::fonts::title, { 255, 255, 255, 16 }, 2, "Press ESC to finish editing." );
 	}
 }

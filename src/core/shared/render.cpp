@@ -1,3 +1,4 @@
+#include "core/huds/huds.h"
 #include "core/interfaces/interfaces.h"
 #include "sdk/photon.h"
 
@@ -77,13 +78,16 @@ void c_render::draw_circle( int x, int y, int radius, const color_t& color ) {
 	draw_polygon( 360, verts, color );
 }
 
-void c_render::draw_text( int x, int y, h_font font, const color_t& color, bool center, const char* text ) {
+void c_render::draw_text( int x, int y, h_font font, const color_t& color, int align, const char* text ) {
 	int text_x = x;
 	int text_y = y;
 
-	if ( center ) {
+	if ( align == 1 ) {
 		auto text_size = get_text_size( font, text );
 		text_x         = x - text_size.x / 2;
+	} else if ( align == 2 ) {
+		auto text_size = get_text_size( font, text );
+		text_x         = x - text_size.x;
 	}
 
 	interfaces::surface->draw_colored_text( font, text_x, text_y, color.r, color.g, color.b, color.a, text );
@@ -179,13 +183,15 @@ h_font c_render::get_font( unsigned long id ) {
 }
 
 vec2_t c_render::normalize( const vec2_t& vec ) {
-	const auto screen_size = get_screen_size( );
+	const vec2_t safezone{ huds::safezone_x, huds::safezone_y };
+	const auto   screen_size = get_screen_size( ) - safezone * 2;
 
-	return vec / screen_size;
+	return ( vec - safezone ) / screen_size;
 }
 
 vec2_t c_render::to_screen( const vec2_t& vec ) {
-	const auto screen_size = get_screen_size( );
+	const vec2_t safezone{ huds::safezone_x, huds::safezone_y };
+	const auto   screen_size = get_screen_size( ) - safezone * 2;
 
-	return vec * screen_size;
+	return vec * screen_size + safezone;
 }

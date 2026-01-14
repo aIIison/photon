@@ -32,7 +32,7 @@ e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
 	interfaces::surface->start_drawing( );
 
 	if ( paint_mode == paint_uipanels ) {
-		photon->input->poll_input( );  // not sure if this is the best place to call this
+		photon->input->poll_input( );  // XXX: not sure if this is the best place to call this?
 
 		huds::draw( );
 
@@ -158,17 +158,22 @@ void gui::draw( ) {
 
 	static photon_api::i_photon_mod* cur_mod;
 
-	// draw bg
+	// draw bg.
 	photon->render->draw_gradient( 0, 0, screen_size.x, screen_size.y, { 0, 0, 0, 200 }, { 32, 32, 32, 200 }, false );
 
-	// draw title
+	// draw title.
 	const auto title_size = photon->render->get_text_size( framework::fonts::bigtitle, "PHOTON" );
 	photon->render->draw_texture( screen_half.x - title_size.x / 2 - 25 - 4, screen_half.y - 90, 50, 50, "photon_icon" );
 	photon->render->draw_text( screen_half.x + 25 + 4, screen_half.y - 80, framework::fonts::bigtitle, framework::colors::white, true, "PHOTON" );
 
+	// menu begin.
 	framework::begin( menu_pos, menu_size );
 
-	if ( framework::tab( tab, { screen_half.x - 100 - tab_height - 8, screen_half.y - tab_height / 2 }, { tab_height, tab_height }, "photon_list", true ) ) {
+	// config list tab.
+	if ( framework::tab( tab,
+	                     { screen_half.x - 100 - tab_height - 8,
+	                       screen_half.y - tab_height / 2 },
+	                     { tab_height, tab_height }, "photon_list", true ) ) {
 		if ( framework::icon_button( { 28, 28 }, "photon_refresh", true, framework::colors::fg ) )
 			configs::iterate_cfgs( );
 
@@ -184,13 +189,19 @@ void gui::draw( ) {
 			framework::config( cfg );
 		}
 	}
-	if ( framework::tab( tab, { screen_half.x - 100, screen_half.y - tab_height / 2 }, { 200, tab_height }, "MODS" ) ) {
+
+	// mods tab.
+	if ( framework::tab( tab,
+	                     { screen_half.x - 100, screen_half.y - tab_height / 2 },
+	                     { 200, tab_height }, "MODS" ) ) {
 		if ( !cur_mod ) {
+			// mod list.
 			for ( auto& mod : mods::mod_list ) {
 				if ( framework::mod( mod.second ) )
 					cur_mod = mod.second.ptr;
 			}
 		} else {
+			// mod settings.
 			if ( framework::icon_button( { 56, 56 }, "photon_left_arrow" ) )
 				cur_mod = nullptr;
 
@@ -208,7 +219,11 @@ void gui::draw( ) {
 			}
 		}
 	}
-	if ( framework::tab( tab, { screen_half.x + 100 + 8, screen_half.y - tab_height / 2 }, { tab_height, tab_height }, "photon_gear", true ) ) {
+
+	// settings tab.
+	if ( framework::tab( tab,
+	                     { screen_half.x + 100 + 8, screen_half.y - tab_height / 2 },
+	                     { tab_height, tab_height }, "photon_gear", true ) ) {
 		framework::separator( "Menu Settings" );
 
 		framework::colorpicker( framework::colors::accent, "Accent Color" );
