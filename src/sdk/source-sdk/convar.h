@@ -94,7 +94,7 @@ public:
 	}
 	__forceinline color_t get_color( ) const {
 		uint8_t* color = ( uint8_t* ) &n_value;
-		return color_t( color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
+		return { color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] };
 	}
 	__forceinline bool get_bool( ) const {
 		return !!get_int( );

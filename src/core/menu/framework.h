@@ -9,13 +9,13 @@ namespace gui {
 	namespace framework {
 		namespace colors {
 			// constant colors
-			inline color_t white = color_t( 255, 255, 255 );
-			inline color_t gray  = color_t( 64, 64, 64 );
-			inline color_t green = color_t( 36, 140, 45 );
-			inline color_t red   = color_t( 168, 43, 43 );
+			inline color_t white{ 255, 255, 255 };
+			inline color_t gray{ 64, 64, 64 };
+			inline color_t green{ 36, 140, 45 };
+			inline color_t red{ 168, 43, 43 };
 
 			// theme colors
-			inline color_t accent = color_t( 66, 128, 244, 255 );
+			inline color_t accent{ 66, 128, 244, 255 };
 			inline color_t bg;
 			inline color_t fg;
 			inline color_t text;
@@ -71,16 +71,16 @@ namespace gui {
 
 		void set_theme( bool dark = false );
 
-		void begin( vec2_t pos, vec2_t size );
+		void begin( const vec2_t& pos, const vec2_t& size );
 		void end( );
-		bool tab( int& selected, vec2_t pos, vec2_t size, const std::string& label, bool use_texture = false );
+		bool tab( int& selected, const vec2_t& pos, const vec2_t& size, const std::string& label, bool use_texture = false );
 		bool mod( mods::mod_info_t& info );
 		bool config( const std::string& label );
-		bool icon_button( vec2_t size, const std::string& texture, bool same_line = false, color_t color = colors::bg );
-		void set_cursor( vec2_t pos );
+		bool icon_button( const vec2_t& size, const std::string& texture, bool same_line = false, const color_t& color = colors::bg );
+		void set_cursor( const vec2_t& pos );
 		void split( int width );
 
-		bool button( vec2_t size, const std::string& label, bool enabled = true, h_font font = fonts::normal, color_t color = colors::accent );
+		bool button( const vec2_t& size, const std::string& label, bool enabled = true, h_font font = fonts::normal, const color_t& color = colors::accent );
 		bool toggle( bool& val, const std::string& label );
 		void slider( int& val, int min, int max, const std::string& label );
 		void sliderf( float& val, float min, float max, const std::string& label );

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-bool c_menu::button( vec2_t size, const char* label ) {
+bool c_menu::button( const vec2_t& size, const char* label ) {
 	return gui::framework::button( size, label );
 }
 bool c_menu::toggle( bool& val, const char* label ) {

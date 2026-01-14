@@ -17,21 +17,9 @@ struct color_t {
 	};
 
 	color_t( ) {}
-	color_t( uint8_t r, uint8_t g, uint8_t b ) {
-		this->r = r;
-		this->g = g;
-		this->b = b;
-		this->a = 255;
-	}
-	color_t( uint8_t r, uint8_t g, uint8_t b, uint8_t a ) {
-		this->r = r;
-		this->g = g;
-		this->b = b;
-		this->a = a;
-	}
-	color_t( uint32_t rgba ) {
-		this->rgba = rgba;
-	}
+	color_t( uint8_t r, uint8_t g, uint8_t b ) : r{ r }, g{ g }, b{ b }, a{ 255 } {}
+	color_t( uint8_t r, uint8_t g, uint8_t b, uint8_t a ) : r{ r }, g{ g }, b{ b }, a{ a } {}
+	color_t( uint32_t rgba ) : rgba{ rgba } {}
 
 	void to_hsv( float& h, float& s, float& v ) {
 		float r = this->r / 255.f;
@@ -89,7 +77,7 @@ struct color_t {
 			break;
 		}
 
-		return color_t{
+		return {
 			( uint8_t ) ( r * 255 ),
 			( uint8_t ) ( g * 255 ),
 			( uint8_t ) ( b * 255 )

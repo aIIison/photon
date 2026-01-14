@@ -151,8 +151,8 @@ void gui::draw( ) {
 	const auto screen_half = screen_size / 2;
 
 	constexpr int tab_height = 56;
-	const auto    menu_size  = vec2_t( 740, 0.4f * screen_size.y );
-	const auto    menu_pos   = vec2_t( screen_half.x - menu_size.x / 2, screen_half.y + tab_height / 2 + 12 );
+	const vec2_t  menu_size{ 740, 0.4f * screen_size.y };
+	const vec2_t  menu_pos{ screen_half.x - menu_size.x / 2, screen_half.y + tab_height / 2 + 12 };
 
 	static int tab = 1;
 

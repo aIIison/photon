@@ -17,10 +17,10 @@ void huds::uninitialize( ) {
 void c_example_hud::draw( ) {
 	photon->hud->draw_begin( this );
 
-	photon->hud->draw_filled_rect( 0, 0, 20, 20, color_t( 255, 0, 0, 255 ) );
-	photon->hud->draw_filled_rect( 20, 20, 20, 20, color_t( 0, 255, 0, 255 ) );
-	photon->hud->draw_filled_rect( 40, 40, 20, 20, color_t( 0, 0, 255, 255 ) );
-	photon->hud->draw_filled_rect( 0, 60, 80, 20, color_t( 255, 255, 255, 255 ) );
+	photon->hud->draw_filled_rect( 0, 0, 20, 20, { 255, 0, 0, 255 } );
+	photon->hud->draw_filled_rect( 20, 20, 20, 20, { 0, 255, 0, 255 } );
+	photon->hud->draw_filled_rect( 40, 40, 20, 20, { 0, 0, 255, 255 } );
+	photon->hud->draw_filled_rect( 0, 60, 80, 20, { 255, 255, 255, 255 } );
 
 	photon->hud->draw_end( );
 }

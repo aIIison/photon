@@ -51,7 +51,10 @@ void c_render::draw_rounded_rect( int x, int y, int w, int h, color_t color, int
 		for ( int j = 0; j < n_verts; j++ ) {
 			float rad = math::deg_to_rad( ang + ( j / ( float ) ( n_verts - 1 ) ) * 90.f );
 
-			verts[ i * n_verts + j ] = vertex_t( vec2_t( _x + rounding * sin( rad ), _y - rounding * cos( rad ) ) );
+			verts[ i * n_verts + j ] = {
+				{ _x + rounding * sin( rad ),
+				  _y - rounding * cos( rad ) }
+			};
 		}
 	}
 
@@ -158,7 +161,7 @@ vec2_t c_render::get_text_size( h_font font, const char* text ) {
 	std::string stxt = text;
 	interfaces::surface->get_text_size( font, std::wstring( stxt.begin( ), stxt.end( ) ).c_str( ), text_width, text_height );
 
-	return vec2_t( text_width, text_height );
+	return { text_width, text_height };
 }
 
 vec2_t c_render::get_screen_size( ) {
@@ -166,7 +169,7 @@ vec2_t c_render::get_screen_size( ) {
 
 	interfaces::surface->get_screen_size( w, h );
 
-	return vec2_t( w, h );
+	return { w, h };
 }
 
 h_font c_render::get_font( unsigned long id ) {
@@ -175,13 +178,13 @@ h_font c_render::get_font( unsigned long id ) {
 	return default_font + id;
 }
 
-vec2_t c_render::normalize( vec2_t vec ) {
+vec2_t c_render::normalize( const vec2_t& vec ) {
 	const auto screen_size = get_screen_size( );
 
 	return vec / screen_size;
 }
 
-vec2_t c_render::to_screen( vec2_t vec ) {
+vec2_t c_render::to_screen( const vec2_t& vec ) {
 	const auto screen_size = get_screen_size( );
 
 	return vec * screen_size;

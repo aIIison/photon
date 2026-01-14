@@ -104,7 +104,7 @@ static void calculate_distances( std::vector< point_distance_t >& distances, con
  * this whole thing might be overcomplicated, but this was my best idea
  */
 static void align_hud_element( photon_api::i_hud* hud ) {
-	const auto clr = color_t( 255, 0, 255, 255 );
+	const color_t clr{ 255, 0, 255, 255 };
 
 	const auto screen_size = photon->render->get_screen_size( );
 	const auto hud_bounds  = get_hud_bounds( hud );
@@ -115,8 +115,8 @@ static void align_hud_element( photon_api::i_hud* hud ) {
 	 * alignment with screen anchors
 	 */
 	hud_bounds_t b;
-	b.mins   = vec2_t( huds::safezone_x, huds::safezone_y );
-	b.maxs   = vec2_t( screen_size.x - huds::safezone_x, screen_size.y - huds::safezone_y );
+	b.mins   = { huds::safezone_x, huds::safezone_y };
+	b.maxs   = { screen_size.x - huds::safezone_x, screen_size.y - huds::safezone_y };
 	b.center = screen_size / 2;
 	calculate_distances( distances, hud_bounds, b );
 
@@ -187,7 +187,7 @@ void huds::draw( ) {
 }
 
 void huds::draw_ui( ) {
-	const auto clr = color_t( 0, 255, 255, 255 );
+	const color_t clr{ 0, 255, 255, 255 };
 
 	const auto screen_size = photon->render->get_screen_size( );
 

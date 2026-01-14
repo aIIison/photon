@@ -37,7 +37,7 @@ void c_hud::draw_begin( photon_api::i_hud* hud ) {
 void c_hud::draw_end( ) {
 	cur_hud = nullptr;
 }
-void c_hud::draw_filled_rect( int x, int y, int w, int h, color_t color ) {
+void c_hud::draw_filled_rect( int x, int y, int w, int h, const color_t& color ) {
 	if ( !cur_hud )
 		return;
 
@@ -45,7 +45,7 @@ void c_hud::draw_filled_rect( int x, int y, int w, int h, color_t color ) {
 
 	photon->render->draw_filled_rect( x, y, w, h, color );
 }
-void c_hud::draw_outlined_rect( int x, int y, int w, int h, color_t color, int stroke_width ) {
+void c_hud::draw_outlined_rect( int x, int y, int w, int h, const color_t& color, int stroke_width ) {
 	if ( !cur_hud )
 		return;
 
@@ -53,7 +53,7 @@ void c_hud::draw_outlined_rect( int x, int y, int w, int h, color_t color, int s
 
 	photon->render->draw_outlined_rect( x, y, w, h, color, stroke_width );
 }
-void c_hud::draw_line( int x, int y, int w, int h, color_t color ) {
+void c_hud::draw_line( int x, int y, int w, int h, const color_t& color ) {
 	if ( !cur_hud )
 		return;
 
@@ -61,7 +61,7 @@ void c_hud::draw_line( int x, int y, int w, int h, color_t color ) {
 
 	photon->render->draw_line( x, y, w, h, color );
 }
-void c_hud::draw_polygon( int n, vertex_t* vertices, color_t color ) {
+void c_hud::draw_polygon( int n, vertex_t* vertices, const color_t& color ) {
 	// FIXME: do some calculation here to figure out bounds
 	// if ( !cur_hud )
 	// 	return;
@@ -70,7 +70,7 @@ void c_hud::draw_polygon( int n, vertex_t* vertices, color_t color ) {
 
 	// photon->render->draw_polygon( n, vertices, color );
 }
-void c_hud::draw_rounded_rect( int x, int y, int w, int h, color_t color, int rounding ) {
+void c_hud::draw_rounded_rect( int x, int y, int w, int h, const color_t& color, int rounding ) {
 	if ( !cur_hud )
 		return;
 
@@ -78,7 +78,7 @@ void c_hud::draw_rounded_rect( int x, int y, int w, int h, color_t color, int ro
 
 	photon->render->draw_rounded_rect( x, y, w, h, color, rounding );
 }
-void c_hud::draw_circle( int x, int y, int radius, color_t color ) {
+void c_hud::draw_circle( int x, int y, int radius, const color_t& color ) {
 	if ( !cur_hud )
 		return;
 
@@ -86,7 +86,7 @@ void c_hud::draw_circle( int x, int y, int radius, color_t color ) {
 
 	photon->render->draw_circle( x, y, radius, color );
 }
-void c_hud::draw_text( int x, int y, h_font font, color_t color, bool center, const char* text ) {
+void c_hud::draw_text( int x, int y, h_font font, const color_t& color, bool center, const char* text ) {
 	if ( !cur_hud )
 		return;
 
@@ -96,7 +96,7 @@ void c_hud::draw_text( int x, int y, h_font font, color_t color, bool center, co
 
 	photon->render->draw_text( x, y, font, color, center, text );
 }
-void c_hud::draw_texture( int x, int y, int w, int h, const char* texture, color_t color ) {
+void c_hud::draw_texture( int x, int y, int w, int h, const char* texture, const color_t& color ) {
 	if ( !cur_hud )
 		return;
 
@@ -104,7 +104,7 @@ void c_hud::draw_texture( int x, int y, int w, int h, const char* texture, color
 
 	photon->render->draw_texture( x, y, w, h, texture, color );
 }
-void c_hud::draw_gradient( int x, int y, int w, int h, color_t color1, color_t color2, bool horizontal ) {
+void c_hud::draw_gradient( int x, int y, int w, int h, const color_t& color1, const color_t& color2, bool horizontal ) {
 	if ( !cur_hud )
 		return;
 

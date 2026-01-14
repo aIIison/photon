@@ -7,10 +7,12 @@ public:
 	float x, y;
 
 	vec2_t( ) {}
-	vec2_t( float x, float y ) {
-		this->x = x;
-		this->y = y;
-	}
+	vec2_t( float x, float y ) : x{ x }, y{ y } {}
+
+	// int for screen-space stuff.
+	vec2_t( int x, int y ) : x{ ( float ) x }, y{ ( float ) y } {}
+	vec2_t( float x, int y ) : x{ x }, y{ ( float ) y } {}
+	vec2_t( int x, float y ) : x{ ( float ) x }, y{ y } {}
 
 	inline float& operator[]( int i ) {
 		return ( ( float* ) this )[ i ];
@@ -19,22 +21,22 @@ public:
 		return ( ( float* ) this )[ i ];
 	}
 	inline vec2_t operator+( const vec2_t& v ) const {
-		return vec2_t( x + v.x, y + v.y );
+		return { x + v.x, y + v.y };
 	}
 	inline vec2_t operator-( const vec2_t& v ) const {
-		return vec2_t( x - v.x, y - v.y );
+		return { x - v.x, y - v.y };
 	}
 	inline vec2_t operator*( const vec2_t& v ) const {
-		return vec2_t( x * v.x, y * v.y );
+		return { x * v.x, y * v.y };
 	}
 	inline vec2_t operator/( const vec2_t& v ) const {
-		return vec2_t( x / v.x, y / v.y );
+		return { x / v.x, y / v.y };
 	}
 	inline vec2_t operator*( const float& fl ) const {
-		return vec2_t( x * fl, y * fl );
+		return { x * fl, y * fl };
 	}
 	inline vec2_t operator/( const float& fl ) const {
-		return vec2_t( x / fl, y / fl );
+		return { x / fl, y / fl };
 	}
 	inline vec2_t& operator+=( const vec2_t& v ) {
 		x += v.x;
@@ -80,11 +82,7 @@ public:
 	float x, y, z;
 
 	vec3_t( ) {}
-	vec3_t( float x, float y, float z ) {
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
+	vec3_t( float x, float y, float z ) : x{ x }, y{ y }, z{ z } {}
 
 	inline float& operator[]( int i ) {
 		return ( ( float* ) this )[ i ];
@@ -93,22 +91,22 @@ public:
 		return ( ( float* ) this )[ i ];
 	}
 	inline vec3_t operator+( const vec3_t& v ) const {
-		return vec3_t( x + v.x, y + v.y, z + v.z );
+		return { x + v.x, y + v.y, z + v.z };
 	}
 	inline vec3_t operator-( const vec3_t& v ) const {
-		return vec3_t( x - v.x, y - v.y, z - v.z );
+		return { x - v.x, y - v.y, z - v.z };
 	}
 	inline vec3_t operator*( const vec3_t& v ) const {
-		return vec3_t( x * v.x, y * v.y, z * v.z );
+		return { x * v.x, y * v.y, z * v.z };
 	}
 	inline vec3_t operator/( const vec3_t& v ) const {
-		return vec3_t( x / v.x, y / v.y, z / v.z );
+		return { x / v.x, y / v.y, z / v.z };
 	}
 	inline vec3_t operator*( const float& fl ) const {
-		return vec3_t( x * fl, y * fl, z * fl );
+		return { x * fl, y * fl, z * fl };
 	}
 	inline vec3_t operator/( const float& fl ) const {
-		return vec3_t( x / fl, y / fl, z / fl );
+		return { x / fl, y / fl, z / fl };
 	}
 	inline vec3_t& operator+=( const vec3_t& v ) {
 		x += v.x;
@@ -171,9 +169,10 @@ public:
 		return ( x * v.x ) + ( y * v.y ) + ( z * v.z );
 	}
 	inline vec3_t cross( const vec3_t& v ) const {
-		return vec3_t(
-						( y * v.z ) - ( z * v.y ),
-						( z * v.x ) - ( x * v.z ),
-						( x * v.y ) - ( y * v.x ) );
+		return {
+			( y * v.z ) - ( z * v.y ),
+			( z * v.x ) - ( x * v.z ),
+			( x * v.y ) - ( y * v.x )
+		};
 	}
 };

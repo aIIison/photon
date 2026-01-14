@@ -7,33 +7,33 @@
 
 #include <algorithm>
 
-static inline vec2_t align_right( vec2_t pos, vec2_t size ) {
+static inline vec2_t align_right( const vec2_t& pos, const vec2_t& size ) {
 	auto pos_x = gui::framework::cur_menu.pos.x + gui::framework::cur_menu.size.x - size.x - 20;
 
-	return vec2_t( pos_x, pos.y );
+	return { pos_x, pos.y };
 }
 
 void gui::framework::set_theme( bool dark ) {
 	if ( !dark ) {
-		colors::bg       = color_t( 255, 255, 255, 255 );
-		colors::fg       = color_t( 200, 200, 200, 255 );
-		colors::text     = color_t( 0, 0, 0, 200 );
-		colors::disabled = color_t( 0, 0, 0, 64 );
+		colors::bg       = { 255, 255, 255, 255 };
+		colors::fg       = { 200, 200, 200, 255 };
+		colors::text     = { 0, 0, 0, 200 };
+		colors::disabled = { 0, 0, 0, 64 };
 	} else {
-		colors::bg       = color_t( 20, 20, 20, 255 );
-		colors::fg       = color_t( 60, 60, 60, 255 );
-		colors::text     = color_t( 255, 255, 255, 48 );
-		colors::disabled = color_t( 255, 255, 255, 4 );
+		colors::bg       = { 20, 20, 20, 255 };
+		colors::fg       = { 60, 60, 60, 255 };
+		colors::text     = { 255, 255, 255, 48 };
+		colors::disabled = { 255, 255, 255, 4 };
 	}
 }
 
-void gui::framework::begin( vec2_t pos, vec2_t size ) {
-	cur_menu = menu_t( );
+void gui::framework::begin( const vec2_t& pos, const vec2_t& size ) {
+	cur_menu = { };
 
 	cur_menu.pos  = pos;
 	cur_menu.size = size;
 
-	cur_menu.cursor = vec2_t( 8, 8 );
+	cur_menu.cursor = { 8, 8 };
 
 	// block input to other controls when a dropdown or colorpicker is open
 	cur_menu.block_input = !cur_dropdown.id.empty( ) || !cur_colorpicker.id.empty( );
@@ -48,10 +48,10 @@ void gui::framework::end( ) {
 	// draw scrollbar only if the content cant fit in to the page
 	const auto max_y = cur_menu.cursor.y - cur_menu.size.y;
 	if ( max_y > 0 ) {
-		const auto cur_pos = vec2_t( cur_menu.pos.x + cur_menu.size.x - 14, cur_menu.pos.y + 8 );
+		const vec2_t cur_pos{ cur_menu.pos.x + cur_menu.size.x - 14, cur_menu.pos.y + 8 };
 
-		const auto height = std::max( cur_menu.size.y - max_y, 16.f );
-		const auto size   = vec2_t( 8, cur_menu.size.y - height - 16 );
+		const auto   height = std::max( cur_menu.size.y - max_y, 16.f );
+		const vec2_t size{ 8, cur_menu.size.y - height - 16 };
 
 		bool hover    = !cur_menu.block_input && photon->input->is_cursor_in_area( cur_pos.x, cur_pos.y, cur_pos.x + size.x, cur_pos.y + cur_menu.size.y - 16 );
 		bool clicking = photon->input->get_key_held( mouse_left );
@@ -87,7 +87,7 @@ void gui::framework::end( ) {
 	if ( !cur_dropdown.id.empty( ) ) {
 		auto cur_pos = cur_dropdown.pos;
 
-		const auto size = vec2_t( 168, 28 );
+		const vec2_t size{ 168, 28 };
 
 		cur_pos.y += size.y;
 
@@ -122,15 +122,15 @@ void gui::framework::end( ) {
 	if ( !cur_colorpicker.id.empty( ) ) {
 		auto cur_pos = cur_colorpicker.pos;
 
-		auto size = vec2_t( 220, 200 );
+		vec2_t size{ 220, 200 };
 
 		cur_pos.x += 20;
 
 		photon->render->draw_rounded_rect( cur_pos.x, cur_pos.y, size.x, size.y, colors::fg, 8 );
 		photon->render->draw_rounded_rect( cur_pos.x + 1, cur_pos.y + 1, size.x - 2, size.y - 2, colors::bg, 8 );
 
-		cur_pos += vec2_t( 8, 8 );
-		size -= vec2_t( 16, 16 );
+		cur_pos += { 8, 8 };
+		size -= { 16, 16 };
 
 		const auto width  = size.x - 24;
 		const auto height = size.y - 20;
@@ -150,7 +150,7 @@ void gui::framework::end( ) {
 		// clicking out
 		// HACK: check if not first frame by checking if alpha is initialized
 		if ( a != -1 && clicking && !hover_sv && !hover_h && !hover_a ) {
-			cur_colorpicker = colorpicker_t( );
+			cur_colorpicker = { };
 			return;
 		}
 
@@ -216,13 +216,13 @@ void gui::framework::end( ) {
 	}
 }
 
-bool gui::framework::tab( int& selected, vec2_t pos, vec2_t size, const std::string& label, bool texture ) {
+bool gui::framework::tab( int& selected, const vec2_t& pos, const vec2_t& size, const std::string& label, bool texture ) {
 	bool hover  = photon->input->is_cursor_in_area( pos.x, pos.y, pos.x + size.x, pos.y + size.y );
 	bool active = ( hover && photon->input->get_key_press( mouse_left ) ) || selected == cur_menu.tab_count;
 	if ( active ) {
 		selected = cur_menu.tab_count;
 
-		cur_menu.cursor = vec2_t( 8, 8 );
+		cur_menu.cursor = { 8, 8 };
 	}
 
 	interfaces::surface->set_clip_rect( 0, 0, photon->render->get_screen_size( ).x, photon->render->get_screen_size( ).y );
@@ -247,7 +247,7 @@ bool gui::framework::tab( int& selected, vec2_t pos, vec2_t size, const std::str
 }
 
 bool gui::framework::mod( mods::mod_info_t& info ) {
-	const auto size = vec2_t( 232, 158 );
+	const vec2_t size{ 232, 158 };
 
 	if ( cur_menu.mod_count % 3 == 0 ) {
 		cur_menu.cursor.x = 8;
@@ -268,7 +268,7 @@ bool gui::framework::mod( mods::mod_info_t& info ) {
 
 	photon->render->draw_text( cur_pos.x + size.x / 2, cur_pos.y + 40, fonts::smaller, colors::text, true, util::ssprintf( "by %s", mod_info.author ).c_str( ) );
 
-	cur_menu.cursor += vec2_t( 8, 80 );
+	cur_menu.cursor += { 8, 80 };
 
 	if ( !info.is_loaded ) {
 		if ( button( { size.x - 16, 28 }, "ENABLE", true, fonts::smaller, colors::green ) )
@@ -288,10 +288,10 @@ bool gui::framework::mod( mods::mod_info_t& info ) {
 }
 
 bool gui::framework::config( const std::string& label ) {
-	const auto size     = vec2_t( cur_menu.size.x - 16, 36 );
-	const auto btn_size = vec2_t( 28, 28 );
+	const vec2_t size{ cur_menu.size.x - 16, 36 };
+	const vec2_t btn_size{ 28, 28 };
 
-	auto cur_pos = cur_menu.pos + vec2_t( 8, cur_menu.cursor.y - scroll_offset );
+	auto cur_pos = cur_menu.pos + vec2_t{ 8, cur_menu.cursor.y - scroll_offset };
 
 	photon->render->draw_rounded_rect( cur_pos.x, cur_pos.y, size.x, size.y, colors::fg, 8 );
 	photon->render->draw_rounded_rect( cur_pos.x + 1, cur_pos.y + 1, size.x - 2, size.y - 2, colors::bg, 8 );
@@ -316,7 +316,7 @@ bool gui::framework::config( const std::string& label ) {
 	return true;
 }
 
-bool gui::framework::icon_button( vec2_t size, const std::string& texture, bool same_line, color_t color ) {
+bool gui::framework::icon_button( const vec2_t& size, const std::string& texture, bool same_line, const color_t& color ) {
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
@@ -338,7 +338,7 @@ bool gui::framework::icon_button( vec2_t size, const std::string& texture, bool 
 	return clicking;
 }
 
-void gui::framework::set_cursor( vec2_t pos ) {
+void gui::framework::set_cursor( const vec2_t& pos ) {
 	cur_menu.cursor = pos;
 }
 
@@ -347,7 +347,7 @@ void gui::framework::split( int width ) {
 	cur_menu.cursor.y = 8;
 }
 
-bool gui::framework::button( vec2_t size, const std::string& label, bool enabled, h_font font, color_t color ) {
+bool gui::framework::button( const vec2_t& size, const std::string& label, bool enabled, h_font font, const color_t& color ) {
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
@@ -374,9 +374,9 @@ bool gui::framework::toggle( bool& val, const std::string& label ) {
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size        = vec2_t( 40, 20 );
-	const int  radius      = size.y / 2 - 2;
-	const int  radius_half = radius / 2;
+	const vec2_t size{ 40, 20 };
+	const int    radius      = size.y / 2 - 2;
+	const int    radius_half = radius / 2;
 
 	auto cur_pos2 = align_right( cur_pos, size );
 
@@ -392,7 +392,7 @@ bool gui::framework::toggle( bool& val, const std::string& label ) {
 
 	photon->render->draw_rounded_rect( cur_pos2.x, cur_pos2.y, size.x, size.y, val ? colors::accent : colors::fg, 10 );
 
-	cur_pos2 += vec2_t( radius, radius );
+	cur_pos2 += { radius, radius };
 	cur_pos2.x += val * size.x / 2;
 
 	photon->render->draw_circle( cur_pos2.x + 2, cur_pos2.y + 2, radius, colors::white );
@@ -406,9 +406,9 @@ void gui::framework::slider( int& val, int min, int max, const std::string& labe
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size        = vec2_t( 200, 20 );
-	const int  radius      = size.y / 2;
-	const int  radius_half = radius / 2;
+	const vec2_t size{ 200, 20 };
+	const int    radius      = size.y / 2;
+	const int    radius_half = radius / 2;
 
 	auto cur_pos2 = align_right( cur_pos, size );
 
@@ -438,7 +438,7 @@ void gui::framework::slider( int& val, int min, int max, const std::string& labe
 	const auto text_size = photon->render->get_text_size( fonts::smaller, util::ssprintf( "%d", val ).c_str( ) );
 	photon->render->draw_text( cur_pos2.x - text_size.x / 2 - 12, cur_pos2.y - 4, fonts::smaller, colors::text, true, util::ssprintf( "%d", val ).c_str( ) );
 
-	cur_pos2 += vec2_t( radius_half, radius_half );
+	cur_pos2 += { radius_half, radius_half };
 	cur_pos2.x += value * ( size.x - radius );
 
 	photon->render->draw_circle( cur_pos2.x, cur_pos2.y, radius, colors::accent );
@@ -451,9 +451,9 @@ void gui::framework::sliderf( float& val, float min, float max, const std::strin
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size        = vec2_t( 200, 20 );
-	const int  radius      = size.y / 2;
-	const int  radius_half = radius / 2;
+	const vec2_t size{ 200, 20 };
+	const int    radius      = size.y / 2;
+	const int    radius_half = radius / 2;
 
 	auto cur_pos2 = align_right( cur_pos, size );
 
@@ -483,7 +483,7 @@ void gui::framework::sliderf( float& val, float min, float max, const std::strin
 	const auto text_size = photon->render->get_text_size( fonts::smaller, util::ssprintf( "%.1f", val ).c_str( ) );
 	photon->render->draw_text( cur_pos2.x - text_size.x / 2 - 12, cur_pos2.y - 4, fonts::smaller, colors::text, true, util::ssprintf( "%.1f", val ).c_str( ) );
 
-	cur_pos2 += vec2_t( radius_half, radius_half );
+	cur_pos2 += { radius_half, radius_half };
 	cur_pos2.x += value * ( size.x - radius );
 
 	photon->render->draw_circle( cur_pos2.x, cur_pos2.y, radius, colors::accent );
@@ -496,7 +496,7 @@ void gui::framework::colorpicker( color_t& val, const std::string& label ) {
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size = vec2_t( 20, 20 );
+	const vec2_t size{ 20, 20 };
 
 	auto cur_pos2 = align_right( cur_pos, size );
 
@@ -507,7 +507,7 @@ void gui::framework::colorpicker( color_t& val, const std::string& label ) {
 
 	if ( clicking ) {
 		if ( open )
-			cur_colorpicker = colorpicker_t( );
+			cur_colorpicker = { };
 		else {
 			cur_colorpicker.id    = label;
 			cur_colorpicker.pos   = cur_pos2;
@@ -535,7 +535,7 @@ void gui::framework::combo( std::size_t& val, const std::vector< std::string >& 
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size = vec2_t( 168, 28 );
+	const vec2_t size{ 168, 28 };
 
 	auto cur_pos2 = align_right( cur_pos, size );
 	cur_pos2.y -= 3;
@@ -547,7 +547,7 @@ void gui::framework::combo( std::size_t& val, const std::vector< std::string >& 
 
 	if ( clicking ) {
 		if ( open )
-			cur_dropdown = dropdown_t( );
+			cur_dropdown = { };
 		else {
 			cur_dropdown.id          = label;
 			cur_dropdown.pos         = cur_pos2;
@@ -562,7 +562,7 @@ void gui::framework::combo( std::size_t& val, const std::vector< std::string >& 
 	if ( cur_dropdown.done ) {
 		val = cur_dropdown.value;
 
-		cur_dropdown = dropdown_t( );
+		cur_dropdown = { };
 	}
 
 	photon->render->draw_text( cur_pos.x, cur_pos.y, fonts::normal, colors::text, false, label.c_str( ) );
@@ -584,7 +584,7 @@ void gui::framework::multicombo( std::size_t& val, const std::vector< std::strin
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size = vec2_t( 168, 28 );
+	const vec2_t size{ 168, 28 };
 
 	auto cur_pos2 = align_right( cur_pos, size );
 	cur_pos2.y -= 3;
@@ -598,7 +598,7 @@ void gui::framework::multicombo( std::size_t& val, const std::vector< std::strin
 		if ( open ) {
 			val = cur_dropdown.value;
 
-			cur_dropdown = dropdown_t( );
+			cur_dropdown = { };
 		} else {
 			cur_dropdown.id          = label;
 			cur_dropdown.pos         = cur_pos2;
@@ -642,7 +642,7 @@ void gui::framework::textbox( const char*& val, const std::string& label ) {
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size = vec2_t( 168, 28 );
+	const vec2_t size{ 168, 28 };
 
 	bool open = cur_textbox == label;
 
@@ -709,7 +709,7 @@ void gui::framework::separator( const std::string& label ) {
 	auto cur_pos = cur_menu.pos + cur_menu.cursor;
 	cur_pos.y -= scroll_offset;
 
-	const auto size = vec2_t( cur_menu.size.x - cur_menu.cursor.x - 20, 2 );
+	const vec2_t size = { cur_menu.size.x - cur_menu.cursor.x - 20, 2 };
 
 	const auto text_size = photon->render->get_text_size( fonts::normal, label.c_str( ) );
 

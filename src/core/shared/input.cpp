@@ -29,7 +29,7 @@ bool c_input::get_key_press( unsigned int code ) {
 }
 
 vec2_t c_input::get_cursor_position( ) {
-	return vec2_t( cursor_x, cursor_y );
+	return { cursor_x, cursor_y };
 }
 
 bool c_input::is_cursor_in_area( int x0, int y0, int x1, int y1 ) {
