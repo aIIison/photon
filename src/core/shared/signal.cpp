@@ -199,19 +199,19 @@ void c_signal::remove_all( ) {
 	signals.clear( );
 }
 
-void* c_signal::get_arg( signal_context_t* ctx, size_t index ) {
+u_data c_signal::get_arg( signal_context_t* ctx, size_t index ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
-	return hook->getArgument< void* >( index );
+	return hook->getArgument< u_data >( index );
 }
-void c_signal::set_arg( signal_context_t* ctx, size_t index, void* value ) {
+void c_signal::set_arg( signal_context_t* ctx, size_t index, u_data value ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
-	return hook->setArgument< void* >( index, value );
+	return hook->setArgument< void* >( index, value.p );
 }
-void* c_signal::get_return( signal_context_t* ctx ) {
+u_data c_signal::get_return( signal_context_t* ctx ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
-	return hook->getReturn< void* >( );
+	return hook->getReturn< u_data >( );
 }
-void c_signal::set_return( signal_context_t* ctx, void* value ) {
+void c_signal::set_return( signal_context_t* ctx, u_data value ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
-	return hook->setReturn< void* >( value );
+	return hook->setReturn< void* >( value.p );
 }

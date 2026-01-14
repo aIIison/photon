@@ -27,7 +27,7 @@ e_return_action lock_cursor( e_callback_type type, signal_context_t* ctx ) {
 }
 
 e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
-	auto paint_mode = ( int ) photon->signal->get_arg( ctx, 1 );
+	auto paint_mode = photon->signal->get_arg( ctx, 1 ).i32;
 
 	interfaces::surface->start_drawing( );
 
@@ -63,7 +63,7 @@ e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
 // block input to the game when photon's menu is open, only works in game, not in the menu
 e_return_action in_key_event( e_callback_type type, signal_context_t* ctx ) {
 	if ( gui::open || huds::edit ) {
-		photon->signal->set_return( ctx, 0 );
+		photon->signal->set_return( ctx, u_data{ 0 } );
 
 		return e_return_action::Supercede;
 	}
@@ -73,7 +73,7 @@ e_return_action in_key_event( e_callback_type type, signal_context_t* ctx ) {
 
 // block input to the menu, vgui has its own input system for some reason, so we have to hook another function
 e_return_action update_button_state( e_callback_type type, signal_context_t* ctx ) {
-	void* ecx = photon->signal->get_arg( ctx, 0 );
+	address_t ecx = photon->signal->get_arg( ctx, 0 ).p;
 
 	if ( gui::open || huds::edit ) {
 		/*
@@ -82,7 +82,7 @@ e_return_action update_button_state( e_callback_type type, signal_context_t* ctx
 		 * i didnt want to hook those functions so we just reset
 		 * the struct that those functions update here
 		 */
-		int context = address_t( ecx ).at< int >( 0xce8 );  // m_hContext
+		int context = ecx.at< int >( 0xce8 );  // m_hContext
 
 		util::call_virtual< OS( 88, 89 ), void >( ecx, context );  // ResetInputContext
 		return e_return_action::Supercede;

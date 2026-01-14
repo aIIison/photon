@@ -7,7 +7,7 @@
 util::console::cmd_t d( "d", "d <addr> - disassemble code at address.", []( util::console::cmd_t::args_t args ) -> bool {
 	if ( args.size( ) > 1 ) {
 		uintptr_t addr;
-		sscanf( args[ 1 ].c_str( ), "%p", &addr );
+		sscanf( args[ 1 ].c_str( ), "%p", reinterpret_cast< void** >( &addr ) );
 		debugger::disasm( addr );
 		return true;
 	}

@@ -26,7 +26,7 @@
 // }
 
 e_return_action set_signon_state( e_callback_type type, signal_context_t* ctx ) {
-	auto state = ( int ) photon->signal->get_arg( ctx, 1 );
+	auto state = photon->signal->get_arg( ctx, 1 ).i32;
 
 	// this is probably not the best way, i saw SAR do something similar but this needs further thought
 	if ( state == signonstate_full )

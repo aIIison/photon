@@ -44,6 +44,15 @@ enum class e_return_action : int32_t {
 	Supercede  // skip real function; use my return value
 };
 
+union u_data {
+	void*    p;
+	char*    psz;
+	bool     b;
+	int32_t  i32;
+	uint32_t u32;
+	float    f32;
+};
+
 struct signal_context_t;
 
 class signal_builder_t {
@@ -78,8 +87,8 @@ public:
 	virtual void              disable( signal_builder_t* signal );
 	virtual signal_builder_t* get( const char* name );
 	virtual void              remove_all( );
-	virtual void*             get_arg( signal_context_t* ctx, size_t index );
-	virtual void              set_arg( signal_context_t* ctx, size_t index, void* value );
-	virtual void*             get_return( signal_context_t* ctx );
-	virtual void              set_return( signal_context_t* ctx, void* value );
+	virtual u_data            get_arg( signal_context_t* ctx, size_t index );
+	virtual void              set_arg( signal_context_t* ctx, size_t index, u_data value );
+	virtual u_data            get_return( signal_context_t* ctx );
+	virtual void              set_return( signal_context_t* ctx, u_data value );
 };

@@ -49,12 +49,18 @@ Use the included `.clang-format` file.
 - `e_` prefix for enums.
 - `c_` prefix for classes.
 - `i_` prefix for interfaces.
+- `u_` prefix for unions.
 - `_t` suffix for data types.
 
 ###### Example
 ```cpp
 enum class e_example {
 	example_value
+};
+
+union u_example {
+	int32_t i32;
+	float   f32;
 };
 
 struct vec2_t {
