@@ -48,7 +48,7 @@ void configs::save( const char* cfg_name ) {
 
 		cur_hud[ "pos" ][ "x" ]    = hud->pos.x;
 		cur_hud[ "pos" ][ "y" ]    = hud->pos.y;
-		cur_hud[ "anchor" ][ "x" ] = hud->anchor.y;
+		cur_hud[ "anchor" ][ "x" ] = hud->anchor.x;
 		cur_hud[ "anchor" ][ "y" ] = hud->anchor.y;
 
 		cur_hud[ "scale" ] = hud->scale;

@@ -44,19 +44,9 @@ static void set_hud_anchor( photon_api::i_hud* hud ) {
 
 	const auto center = get_abs_pos( hud ) + hud->bounds / 2;
 
-	if ( ( int ) center.x < screen_size.x / 2 )
-		hud->anchor.x = 0.0f;
-	else if ( ( int ) center.x > screen_size.x / 2 )
-		hud->anchor.x = 1.0f;
-	else
-		hud->anchor.x = 0.5f;
-
-	if ( ( int ) center.y < screen_size.y / 2 )
-		hud->anchor.y = 0.0f;
-	else if ( ( int ) center.y > screen_size.y / 2 )
-		hud->anchor.y = 1.0f;
-	else
-		hud->anchor.y = 0.5f;
+	// divide screen into thirds.
+	hud->anchor.x = int( center.x / ( screen_size.x / 3 ) ) * 0.5f;
+	hud->anchor.y = int( center.y / ( screen_size.y / 3 ) ) * 0.5f;
 }
 
 static hud_bounds_t get_hud_bounds( photon_api::i_hud* hud ) {
@@ -120,6 +110,15 @@ static void align_hud_element( photon_api::i_hud* hud ) {
 	b.maxs   = { screen_size.x - huds::safezone_x, screen_size.y - huds::safezone_y };
 	b.center = screen_size / 2;
 	calculate_distances( distances, hud_bounds, b );
+
+	// draw screen thirds.
+	{
+		const color_t clr{ 255, 255, 255, 2 };
+		photon->render->draw_line( screen_size.x / 3, 0, 0, screen_size.y, clr );
+		photon->render->draw_line( screen_size.x / 3 * 2, 0, 0, screen_size.y, clr );
+		photon->render->draw_line( 0, screen_size.y / 3, screen_size.x, 0, clr );
+		photon->render->draw_line( 0, screen_size.y / 3 * 2, screen_size.x, 0, clr );
+	}
 
 	/*
 	 * alignment with other hud elements
@@ -201,8 +200,11 @@ void huds::draw_ui( ) {
 		const auto pos = get_abs_pos( hud );
 
 		if ( photon->input->is_cursor_in_area( pos.x, pos.y, pos.x + hud->bounds.x, pos.y + hud->bounds.y ) ) {
+			// draw bounding box.
 			photon->render->draw_outlined_rect( pos.x - 1, pos.y - 1, hud->bounds.x + 2, hud->bounds.y + 2, clr );
-			photon->render->draw_filled_rect( pos.x + hud->anchor.x * hud->bounds.x - 3, pos.y + hud->anchor.y * hud->bounds.y - 3, 6, 6, clr );
+
+			// draw anchor point.
+			photon->render->draw_circle( pos.x + hud->anchor.x * hud->bounds.x, pos.y + hud->anchor.y * hud->bounds.y, 2, clr );
 
 			if ( photon->input->get_key_press( mouse_left ) ) {
 				cur_hud  = hud;
