@@ -44,8 +44,14 @@ void configs::save( const char* cfg_name ) {
 
 	// save hud layout.
 	for ( auto& [ name, hud ] : huds::huds ) {
-		cfg[ "huds" ][ name ][ "x" ] = hud->pos.x;
-		cfg[ "huds" ][ name ][ "y" ] = hud->pos.y;
+		auto& cur_hud = cfg[ "huds" ][ name ];
+
+		cur_hud[ "pos" ][ "x" ]    = hud->pos.x;
+		cur_hud[ "pos" ][ "y" ]    = hud->pos.y;
+		cur_hud[ "anchor" ][ "x" ] = hud->anchor.y;
+		cur_hud[ "anchor" ][ "y" ] = hud->anchor.y;
+
+		cur_hud[ "scale" ] = hud->scale;
 	}
 
 	// save module settings.
@@ -99,8 +105,14 @@ void configs::load( const char* cfg_name ) {
 
 	// load hud layout.
 	for ( auto& [ name, hud ] : huds::huds ) {
-		hud->pos.x = cfg[ "huds" ][ name ][ "x" ].get< float >( );
-		hud->pos.y = cfg[ "huds" ][ name ][ "y" ].get< float >( );
+		auto& cur_hud = cfg[ "huds" ][ name ];
+
+		hud->pos.x    = cur_hud[ "pos" ][ "x" ].get< float >( );
+		hud->pos.y    = cur_hud[ "pos" ][ "y" ].get< float >( );
+		hud->anchor.x = cur_hud[ "anchor" ][ "x" ].get< float >( );
+		hud->anchor.y = cur_hud[ "anchor" ][ "y" ].get< float >( );
+
+		hud->scale = cur_hud[ "scale" ].get< float >( );
 	}
 
 	// load module settings.
