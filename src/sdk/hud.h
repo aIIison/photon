@@ -31,6 +31,6 @@ public:
 	virtual void draw_rounded_rect( int x, int y, int w, int h, const color_t& color, int rounding );
 	virtual void draw_circle( int x, int y, int radius, const color_t& color );
 	virtual void draw_text( int x, int y, h_font font, const color_t& color, bool center, const char* text );
-	virtual void draw_texture( int x, int y, int w, int h, const char* texture, const color_t& color = { 255, 255, 255, 255 } );
+	virtual void draw_texture( int x, int y, int w, int h, const char* texture, const color_t& color = { } );
 	virtual void draw_gradient( int x, int y, int w, int h, const color_t& color1, const color_t& color2, bool horizontal );
 };

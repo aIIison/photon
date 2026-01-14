@@ -48,7 +48,7 @@ void c_photon_mod::unload( ) {
 
 void c_photon_mod::on_event( const char* msg ) {
 	if ( !strcmp( msg, "paint" ) ) {
-		photon->render->draw_text( 2, 2, font, { 255, 255, 255, 255 }, false, "example mod loaded." );
+		photon->render->draw_text( 2, 2, font, { }, false, "example mod loaded." );
 	}
 	if ( !strcmp( msg, "on_screen_size_changed" ) ) {
 		photon->render->create_font( font, "Tahoma", 12, false, fontflag_dropshadow );

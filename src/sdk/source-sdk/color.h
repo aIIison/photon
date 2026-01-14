@@ -13,7 +13,7 @@ struct color_t {
 			uint8_t a;
 		};
 
-		uint32_t rgba;
+		uint32_t rgba{ 0xFFFFFFFF };  // default color: opaque white.
 	};
 
 	color_t( ) {}
