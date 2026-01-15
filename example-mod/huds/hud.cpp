@@ -17,10 +17,12 @@ void huds::uninitialize( ) {
 void c_example_hud::draw( ) {
 	photon->hud->draw_begin( this );
 
-	photon->hud->draw_filled_rect( 0, 0, 20, 20, { 255, 0, 0, 255 } );
-	photon->hud->draw_filled_rect( 20, 20, 20, 20, { 0, 255, 0, 255 } );
-	photon->hud->draw_filled_rect( 40, 40, 20, 20, { 0, 0, 255, 255 } );
-	photon->hud->draw_filled_rect( 0, 60, 80, 20, { 255, 255, 255, 255 } );
+	vertex_t verts[]{
+		{ { 100, 0 } },
+		{ { 300, 300 } },
+		{ { 0, 200 } }
+	};
+	photon->hud->draw_polygon( 3, verts, { } );
 
 	photon->hud->draw_end( );
 }

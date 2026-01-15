@@ -59,13 +59,33 @@ void c_hud::draw_line( int x, int y, int w, int h, const color_t& color ) {
 	photon->render->draw_line( x, y, w, h, color );
 }
 void c_hud::draw_polygon( int n, vertex_t* vertices, const color_t& color ) {
-	// FIXME: do some calculation here to figure out bounds
-	// if ( !cur_hud )
-	// 	return;
+	if ( !cur_hud )
+		return;
 
-	// setup_context( x, y, w, h );
+	// calculate bounds.
+	vec2_t mins, maxs;
+	mins = maxs = vertices[ 0 ].position;
 
-	// photon->render->draw_polygon( n, vertices, color );
+	for ( int i = 1; i < n; ++i ) {
+		const auto& pos = vertices[ i ].position;
+
+		mins.x = std::fmin( mins.x, pos.x );
+		mins.y = std::fmin( mins.y, pos.y );
+		maxs.x = std::fmax( maxs.x, pos.x );
+		maxs.y = std::fmax( maxs.y, pos.y );
+	}
+
+	int x = mins.x;
+	int y = mins.y;
+
+	// now setup.
+	setup_context( x, y, maxs.x - mins.x, maxs.y - mins.y );
+
+	// move each individual vertex.
+	for ( int i{ }; i < n; ++i )
+		vertices[ i ].position += { x, y };
+
+	photon->render->draw_polygon( n, vertices, color );
 }
 void c_hud::draw_rounded_rect( int x, int y, int w, int h, const color_t& color, int rounding ) {
 	if ( !cur_hud )
@@ -79,7 +99,10 @@ void c_hud::draw_circle( int x, int y, int radius, const color_t& color ) {
 	if ( !cur_hud )
 		return;
 
-	setup_context( x, y, radius * 2, radius * 2 );  // XXX: maybe wrong ? too lazy to test rn
+	setup_context( x, y, radius * 2, radius * 2 );
+
+	x += radius;
+	y += radius;
 
 	photon->render->draw_circle( x, y, radius, color );
 }

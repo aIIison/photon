@@ -118,9 +118,8 @@ bool gui::initialize( ) {
 	photon->render->load_texture_png( "photon_caret_down", resource::icons::caret_down, 8, 8, sizeof( resource::icons::caret_down ) );
 	photon->render->load_texture_png( "photon_caret_up", resource::icons::caret_up, 8, 8, sizeof( resource::icons::caret_up ) );
 
-	// initialize hue gradient texture (this should probably be in framework)
-	constexpr int tex_height = 180;
-
+	// initialize hue gradient texture.
+	constexpr int tex_height{ 180 };
 	hue_tex = new color_t[ 1 * tex_height ];
 	for ( int i = 0; i < tex_height; ++i ) {
 		float hue = i * ( 1.f / tex_height );
@@ -138,7 +137,7 @@ bool gui::initialize( ) {
 }
 
 void gui::uninitialize( ) {
-	SAFE_DELETE( hue_tex );
+	SAFE_DELETE_ARRAY( hue_tex );
 
 	photon->render->destruct_font( framework::fonts::bigtitle );
 	photon->render->destruct_font( framework::fonts::title );

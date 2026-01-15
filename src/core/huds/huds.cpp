@@ -111,15 +111,6 @@ static void align_hud_element( photon_api::i_hud* hud ) {
 	b.center = screen_size / 2;
 	calculate_distances( distances, hud_bounds, b );
 
-	// draw screen thirds.
-	{
-		const color_t clr{ 255, 255, 255, 2 };
-		photon->render->draw_line( screen_size.x / 3, 0, 0, screen_size.y, clr );
-		photon->render->draw_line( screen_size.x / 3 * 2, 0, 0, screen_size.y, clr );
-		photon->render->draw_line( 0, screen_size.y / 3, screen_size.x, 0, clr );
-		photon->render->draw_line( 0, screen_size.y / 3 * 2, screen_size.x, 0, clr );
-	}
-
 	/*
 	 * alignment with other hud elements
 	 */
@@ -194,6 +185,15 @@ void huds::draw_ui( ) {
 	static photon_api::i_hud* cur_hud;
 
 	static vec2_t grab_pos;
+
+	// draw screen thirds.
+	{
+		const color_t clr{ 255, 255, 255, 2 };
+		photon->render->draw_line( screen_size.x / 3, 0, 0, screen_size.y, clr );
+		photon->render->draw_line( screen_size.x / 3 * 2, 0, 0, screen_size.y, clr );
+		photon->render->draw_line( 0, screen_size.y / 3, screen_size.x, 0, clr );
+		photon->render->draw_line( 0, screen_size.y / 3 * 2, screen_size.x, 0, clr );
+	}
 
 	// check if clicking on a hud.
 	for ( const auto& [ _, hud ] : huds ) {
