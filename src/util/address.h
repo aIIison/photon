@@ -101,7 +101,7 @@ public:
 			out = *( uintptr_t* ) out;
 		}
 
-		return ( t ) out;
+		return reinterpret_cast< t& >( out );
 	}
 
 	// follow relative8 and relative16/32 offsets.
@@ -129,7 +129,7 @@ public:
 		else
 			out = ( out + 1 ) - ( uint8_t ) ( ~r + 1 );
 
-		return ( t ) out;
+		return reinterpret_cast< t& >( out );
 	}
 
 	template < typename t = address_t >
@@ -150,7 +150,7 @@ public:
 		// relative to address of next instruction.
 		out = ( out + 4 ) + r;
 
-		return ( t ) out;
+		return reinterpret_cast< t& >( out );
 	}
 
 	// set.

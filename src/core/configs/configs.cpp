@@ -60,26 +60,31 @@ void configs::save( const char* cfg_name ) {
 			continue;
 
 		for ( auto& [ key, value ] : obj.items( ) ) {
+			if ( !ptrs[ module ].contains( key ) )
+				continue;
+
+			address_t p = ptrs[ module ][ key ].get< uintptr_t >( );
+
 			switch ( value.type( ) ) {
 			case value_t::array: /* array = color_t */ {
-				color_t col = *( color_t* ) ptrs[ module ][ key ].get< uintptr_t >( );
+				color_t col = p.get< color_t >( );
 				value       = { col.r, col.g, col.b, col.a };
 				continue;
 			}
 			case value_t::string:
-				value = *( const char** ) ptrs[ module ][ key ].get< uintptr_t >( );
+				value = p.get< const char* >( );
 				continue;
 			case value_t::boolean:
-				value = *( bool* ) ptrs[ module ][ key ].get< uintptr_t >( );
+				value = p.get< bool >( );
 				continue;
 			case value_t::number_integer:
-				value = *( int32_t* ) ptrs[ module ][ key ].get< uintptr_t >( );
+				value = p.get< int32_t >( );
 				continue;
 			case value_t::number_unsigned:
-				value = *( uint32_t* ) ptrs[ module ][ key ].get< uintptr_t >( );
+				value = p.get< uint32_t >( );
 				continue;
 			case value_t::number_float:
-				value = *( float* ) ptrs[ module ][ key ].get< uintptr_t >( );
+				value = p.get< float >( );
 				continue;
 			}
 		}
@@ -124,24 +129,26 @@ void configs::load( const char* cfg_name ) {
 			if ( !ptrs[ module ].contains( key ) )
 				continue;
 
+			address_t p = ptrs[ module ][ key ].get< uintptr_t >( );
+
 			switch ( value.type( ) ) {
 			case value_t::array: /* array = color_t */
-				*( uint32_t* ) ptrs[ module ][ key ].get< uintptr_t >( ) = *( uint32_t* ) value.get< std::vector< std::uint8_t > >( ).data( );
+				p.set( address_t{ value.get< std::vector< std::uint8_t > >( ).data( ) }.get< uint32_t >( ) );
 				continue;
 			case value_t::string:
-				*( const char** ) ptrs[ module ][ key ].get< uintptr_t >( ) = strdup( value.get< std::string >( ).c_str( ) );
+				p.set( strdup( value.get< std::string >( ).c_str( ) ) );
 				continue;
 			case value_t::boolean:
-				*( bool* ) ptrs[ module ][ key ].get< uintptr_t >( ) = value.get< bool >( );
+				p.set( value.get< bool >( ) );
 				continue;
 			case value_t::number_integer:
-				*( int32_t* ) ptrs[ module ][ key ].get< uintptr_t >( ) = value.get< int32_t >( );
+				p.set( value.get< int32_t >( ) );
 				continue;
 			case value_t::number_unsigned:
-				*( uint32_t* ) ptrs[ module ][ key ].get< uintptr_t >( ) = value.get< uint32_t >( );
+				p.set( value.get< uint32_t >( ) );
 				continue;
 			case value_t::number_float:
-				*( float* ) ptrs[ module ][ key ].get< uintptr_t >( ) = value.get< float >( );
+				p.set( value.get< float >( ) );
 				continue;
 			}
 		}
