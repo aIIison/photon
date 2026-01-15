@@ -6,48 +6,30 @@
 
 #include <stdarg.h>
 
-void c_common::log( const char* fmt, ... ) {
-	/* this sucks */
-	va_list ap1, ap2;
-	va_start( ap1, fmt );
-	va_copy( ap2, ap1 );
-	size_t sz = vsnprintf( NULL, 0, fmt, ap1 ) + 1;
-	va_end( ap1 );
-	char* buf = ( char* ) malloc( sz );
-	vsnprintf( buf, sz, fmt, ap2 );
-	va_end( ap2 );
-	std::string str( buf );
+#define HANDLE_VA( )                             \
+	va_list ap1, ap2;                               \
+	va_start( ap1, fmt );                           \
+	va_copy( ap2, ap1 );                            \
+	size_t sz = vsnprintf( NULL, 0, fmt, ap1 ) + 1; \
+	va_end( ap1 );                                  \
+	char* buf = ( char* ) malloc( sz );             \
+	vsnprintf( buf, sz, fmt, ap2 );                 \
+	va_end( ap2 );                                  \
+	std::string str( buf );                         \
 	free( buf );
+
+void c_common::log( const char* fmt, ... ) {
+	HANDLE_VA( );
 	interfaces::console->msg( str.c_str( ) );
 	util::console::log( "[+] %s", str.c_str( ) );
 }
 void c_common::log( const color_t& clr, const char* fmt, ... ) {
-	/* this sucks */
-	va_list ap1, ap2;
-	va_start( ap1, fmt );
-	va_copy( ap2, ap1 );
-	size_t sz = vsnprintf( NULL, 0, fmt, ap1 ) + 1;
-	va_end( ap1 );
-	char* buf = ( char* ) malloc( sz );
-	vsnprintf( buf, sz, fmt, ap2 );
-	va_end( ap2 );
-	std::string str( buf );
-	free( buf );
+	HANDLE_VA( );
 	interfaces::console->color_msg( clr, str.c_str( ) );
 	util::console::log( PRINT_GREEN "[+] %s", str.c_str( ) );
 }
 void c_common::log_warn( const char* fmt, ... ) {
-	/* this sucks */
-	va_list ap1, ap2;
-	va_start( ap1, fmt );
-	va_copy( ap2, ap1 );
-	size_t sz = vsnprintf( NULL, 0, fmt, ap1 ) + 1;
-	va_end( ap1 );
-	char* buf = ( char* ) malloc( sz );
-	vsnprintf( buf, sz, fmt, ap2 );
-	va_end( ap2 );
-	std::string str( buf );
-	free( buf );
+	HANDLE_VA( );
 	interfaces::console->warning( str.c_str( ) );
 	util::console::log( PRINT_RED "[!] %s", str.c_str( ) );
 }
