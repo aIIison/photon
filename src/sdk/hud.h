@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace photon_api {
+namespace photon {
 	class i_hud {
 	public:
 		vec2_t pos;     // values between (0, 1).
@@ -15,14 +15,14 @@ namespace photon_api {
 		virtual void draw( )           = 0;
 		virtual bool is_splitscreen( ) = 0;
 	};
-}  // namespace photon_api
+}  // namespace photon
 
 class c_hud {
 public:
-	virtual void reg( const char* name, photon_api::i_hud* hud );
+	virtual void reg( const char* name, photon::i_hud* hud );
 	virtual void unreg( const char* name );
 
-	virtual void draw_begin( photon_api::i_hud* hud );
+	virtual void draw_begin( photon::i_hud* hud );
 	virtual void draw_end( );
 	virtual void draw_filled_rect( int x, int y, int w, int h, const color_t& color );
 	virtual void draw_outlined_rect( int x, int y, int w, int h, const color_t& color, int stroke_width = 1 );

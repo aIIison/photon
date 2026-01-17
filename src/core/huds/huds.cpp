@@ -19,15 +19,15 @@ struct point_distance_t {
 	float  dist;  // squared distance
 };
 
-static vec2_t get_abs_pos( photon_api::i_hud* hud ) {
-	const auto pos    = photon->render->to_screen( hud->pos );
+static vec2_t get_abs_pos( photon::i_hud* hud ) {
+	const auto pos    = photon::get( )->render->to_screen( hud->pos );
 	const auto anchor = hud->anchor * hud->bounds;
 
 	return pos - anchor;
 }
 
-static void set_abs_pos( photon_api::i_hud* hud, const vec2_t& pos ) {
-	const auto screen_size = photon->render->get_screen_size( );
+static void set_abs_pos( photon::i_hud* hud, const vec2_t& pos ) {
+	const auto screen_size = photon::get( )->render->get_screen_size( );
 
 	const auto anchor = hud->anchor * hud->bounds;
 
@@ -36,11 +36,11 @@ static void set_abs_pos( photon_api::i_hud* hud, const vec2_t& pos ) {
 	new_pos.x = std::clamp( new_pos.x, ( float ) huds::safezone_x, screen_size.x - huds::safezone_x );
 	new_pos.y = std::clamp( new_pos.y, ( float ) huds::safezone_y, screen_size.y - huds::safezone_y );
 
-	hud->pos = photon->render->normalize( new_pos );
+	hud->pos = photon::get( )->render->normalize( new_pos );
 }
 
-static void set_hud_anchor( photon_api::i_hud* hud ) {
-	const auto screen_size = photon->render->get_screen_size( );
+static void set_hud_anchor( photon::i_hud* hud ) {
+	const auto screen_size = photon::get( )->render->get_screen_size( );
 
 	const auto center = get_abs_pos( hud ) + hud->bounds / 2;
 
@@ -49,7 +49,7 @@ static void set_hud_anchor( photon_api::i_hud* hud ) {
 	hud->anchor.y = int( center.y / ( screen_size.y / 3 ) ) * 0.5f;
 }
 
-static hud_bounds_t get_hud_bounds( photon_api::i_hud* hud ) {
+static hud_bounds_t get_hud_bounds( photon::i_hud* hud ) {
 	const auto hud_pos = get_abs_pos( hud );
 
 	hud_bounds_t bounds;
@@ -94,10 +94,10 @@ static void calculate_distances( std::vector< point_distance_t >& distances, con
  * get all distances to all hud element's edges, sort them, align to closest
  * this whole thing might be overcomplicated, but this was my best idea
  */
-static void align_hud_element( photon_api::i_hud* hud ) {
+static void align_hud_element( photon::i_hud* hud ) {
 	const color_t clr{ 255, 0, 255, 255 };
 
-	const auto screen_size = photon->render->get_screen_size( );
+	const auto screen_size = photon::get( )->render->get_screen_size( );
 	const auto hud_bounds  = get_hud_bounds( hud );
 
 	std::vector< point_distance_t > distances;
@@ -142,19 +142,19 @@ static void align_hud_element( photon_api::i_hud* hud ) {
 		was_vertical = vertical;
 
 		if ( pt_dist.dist < 100 ) {
-			auto pos = photon->render->to_screen( hud->pos );
+			auto pos = photon::get( )->render->to_screen( hud->pos );
 
 			if ( !vertical ) {
 				pos.x = ( pt_dist.pt2.x - ( pt_dist.pt1.x - hud_pos.x ) );
 				pos.x += hud->anchor.x * hud->bounds.x;
-				photon->render->draw_line( pt_dist.pt2.x, 0, 0, screen_size.y, clr );
+				photon::get( )->render->draw_line( pt_dist.pt2.x, 0, 0, screen_size.y, clr );
 			} else {
 				pos.y = ( pt_dist.pt2.y - ( pt_dist.pt1.y - hud_pos.y ) );
 				pos.y += hud->anchor.y * hud->bounds.y;
-				photon->render->draw_line( 0, pt_dist.pt2.y, screen_size.x, 0, clr );
+				photon::get( )->render->draw_line( 0, pt_dist.pt2.y, screen_size.x, 0, clr );
 			}
 
-			hud->pos = photon->render->normalize( pos );
+			hud->pos = photon::get( )->render->normalize( pos );
 		}
 	}
 }
@@ -163,12 +163,12 @@ void huds::draw( ) {
 	for ( const auto& [ _, hud ] : huds ) {
 		hud->draw( );
 
-		if ( hud->is_splitscreen( ) && photon->common->is_splitscreen( ) ) {
-			const auto  screen_size      = photon->render->get_screen_size( );
-			static auto ss_verticalsplit = photon->con->find_var( "ss_verticalsplit" );
+		if ( hud->is_splitscreen( ) && photon::get( )->common->is_splitscreen( ) ) {
+			const auto  screen_size      = photon::get( )->render->get_screen_size( );
+			static auto ss_verticalsplit = photon::get( )->con->find_var( "ss_verticalsplit" );
 
 			auto axis   = 1 - ss_verticalsplit->get_int( );
-			auto offset = photon->render->normalize( screen_size / 2 )[ axis ];
+			auto offset = photon::get( )->render->normalize( screen_size / 2 )[ axis ];
 
 			hud->pos[ axis ] += offset;
 			hud->draw( );
@@ -180,52 +180,52 @@ void huds::draw( ) {
 void huds::draw_ui( ) {
 	const color_t clr{ 0, 255, 255, 255 };
 
-	const auto screen_size = photon->render->get_screen_size( );
+	const auto screen_size = photon::get( )->render->get_screen_size( );
 
-	static photon_api::i_hud* cur_hud;
+	static photon::i_hud* cur_hud;
 
 	static vec2_t grab_pos;
 
 	// draw screen thirds.
 	{
 		const color_t clr{ 255, 255, 255, 2 };
-		photon->render->draw_line( screen_size.x / 3, 0, 0, screen_size.y, clr );
-		photon->render->draw_line( screen_size.x / 3 * 2, 0, 0, screen_size.y, clr );
-		photon->render->draw_line( 0, screen_size.y / 3, screen_size.x, 0, clr );
-		photon->render->draw_line( 0, screen_size.y / 3 * 2, screen_size.x, 0, clr );
+		photon::get( )->render->draw_line( screen_size.x / 3, 0, 0, screen_size.y, clr );
+		photon::get( )->render->draw_line( screen_size.x / 3 * 2, 0, 0, screen_size.y, clr );
+		photon::get( )->render->draw_line( 0, screen_size.y / 3, screen_size.x, 0, clr );
+		photon::get( )->render->draw_line( 0, screen_size.y / 3 * 2, screen_size.x, 0, clr );
 	}
 
 	// check if clicking on a hud.
 	for ( const auto& [ _, hud ] : huds ) {
 		const auto pos = get_abs_pos( hud );
 
-		if ( photon->input->is_cursor_in_area( pos.x, pos.y, pos.x + hud->bounds.x, pos.y + hud->bounds.y ) ) {
+		if ( photon::get( )->input->is_cursor_in_area( pos.x, pos.y, pos.x + hud->bounds.x, pos.y + hud->bounds.y ) ) {
 			// draw bounding box.
-			photon->render->draw_outlined_rect( pos.x - 1, pos.y - 1, hud->bounds.x + 2, hud->bounds.y + 2, clr );
+			photon::get( )->render->draw_outlined_rect( pos.x - 1, pos.y - 1, hud->bounds.x + 2, hud->bounds.y + 2, clr );
 
 			// draw anchor point.
-			photon->render->draw_circle( pos.x + hud->anchor.x * hud->bounds.x, pos.y + hud->anchor.y * hud->bounds.y, 2, clr );
+			photon::get( )->render->draw_circle( pos.x + hud->anchor.x * hud->bounds.x, pos.y + hud->anchor.y * hud->bounds.y, 2, clr );
 
-			if ( photon->input->get_key_press( mouse_left ) ) {
+			if ( photon::get( )->input->get_key_press( mouse_left ) ) {
 				cur_hud  = hud;
-				grab_pos = photon->input->get_cursor_position( ) - pos;
+				grab_pos = photon::get( )->input->get_cursor_position( ) - pos;
 			}
 		}
 	}
 
 	// moving around hud.
 	if ( cur_hud ) {
-		if ( photon->input->get_key_held( mouse_left ) ) {
+		if ( photon::get( )->input->get_key_held( mouse_left ) ) {
 			const auto hud = cur_hud;
 
 			set_hud_anchor( hud );
 
-			set_abs_pos( hud, photon->input->get_cursor_position( ) - grab_pos );
+			set_abs_pos( hud, photon::get( )->input->get_cursor_position( ) - grab_pos );
 
 			align_hud_element( hud );
 		}
 
-		if ( photon->input->get_key_release( mouse_left ) ) {
+		if ( photon::get( )->input->get_key_release( mouse_left ) ) {
 			cur_hud = nullptr;
 		}
 	}
@@ -234,7 +234,7 @@ void huds::draw_ui( ) {
 	{
 		const vec2_t pos{ screen_size.x - 8, 8 };
 
-		photon->render->draw_text( pos.x, pos.y, gui::framework::fonts::bigtitle, { 255, 255, 255, 64 }, 2, "Currently editing HUD layout." );
-		photon->render->draw_text( pos.x, pos.y + 28, gui::framework::fonts::title, { 255, 255, 255, 16 }, 2, "Press ESC to finish editing." );
+		photon::get( )->render->draw_text( pos.x, pos.y, gui::framework::fonts::bigtitle, { 255, 255, 255, 64 }, 2, "Currently editing HUD layout." );
+		photon::get( )->render->draw_text( pos.x, pos.y + 28, gui::framework::fonts::title, { 255, 255, 255, 16 }, 2, "Press ESC to finish editing." );
 	}
 }

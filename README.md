@@ -91,41 +91,37 @@ Download and include the [SDK](src/sdk) in your project.
 
 #include <photon.h>
 
-class c_photon_mod : public photon_api::i_photon_mod {
+class c_example_mod : public photon::i_mod {
 public:
-	virtual bool                   load( photon_api::c_shared* photon );
-	virtual void                   unload( );
-	virtual void                   on_event( const char* msg );
-	virtual photon_api::mod_info_t get_info( );
-	virtual void                   paint_menu( );
+	virtual bool               load( );
+	virtual void               unload( );
+	virtual void               on_event( const char* msg );
+	virtual photon::mod_info_t get_info( );
+	virtual void               paint_menu( );
 };
-
-extern c_photon_mod mod;
 
 /* mod.cpp */
 #include "mod.h"
 
-c_photon_mod mod;
+EXPOSE_PHOTON_MOD( c_example_mod );
 
-EXPOSE_PHOTON_MOD( c_photon_mod, mod );
+bool c_example_mod::load( ) {
+	// allocate & initialize stuff etc.
 
-photon_api::c_shared* photon;
-
-bool c_photon_mod::load( photon_api::c_shared* photon ) {
-	::photon = photon; // expose photon interface globally.
+	photon::get( )->common->log("hey!\n");
 
 	return true;
 }
 
-void c_photon_mod::unload( ) {
-	// unallocate stuff here etc.
+void c_example_mod::unload( ) {
+	// unallocate & deinitialize stuff here etc.
 }
 
-void c_photon_mod::on_event( const char* msg ) {
+void c_example_mod::on_event( const char* msg ) {
 	// handle events here.
 }
 
-photon_api::mod_info_t c_photon_mod::get_info( ) {
+photon::mod_info_t c_example_mod::get_info( ) {
 	return {
 		.name    = "Example Mod",
 		.author  = "hero",
@@ -133,7 +129,7 @@ photon_api::mod_info_t c_photon_mod::get_info( ) {
 	};
 }
 
-void c_photon_mod::paint_menu( ) {
-	// add controls to the menu here using functions from photon->menu.
+void c_example_mod::paint_menu( ) {
+	// add controls to the menu here using functions from photon::get()->menu.
 }
 ```

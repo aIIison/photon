@@ -6,9 +6,9 @@
 
 namespace mods {
 	struct mod_info_t {
-		void*                     handle;
-		photon_api::i_photon_mod* ptr;
-		bool                      is_loaded;  // this is kinda confusing, because the module is loaded at all times, but it shouldnt really do anything until the fn "load" is called, maybe should rename this to is_enabled?
+		void*          handle;
+		photon::i_mod* ptr;
+		bool           is_loaded;  // this is kinda confusing, because the module is loaded at all times, but it shouldnt really do anything until the fn "load" is called, maybe should rename this to is_enabled?
 	};
 
 	inline std::unordered_map< std::string, mod_info_t > mod_list;
@@ -24,5 +24,5 @@ namespace mods {
 
 	void print( );
 
-	void post_event( void* sender, const char* msg );
+	void post_event( const char* msg );
 }  // namespace mods

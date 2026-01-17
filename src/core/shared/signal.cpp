@@ -38,12 +38,12 @@ signal_builder_t* signal_builder_t::with_parameters( const std::vector< e_data_t
 signal_builder_t* signal_builder_t::in_module( const char* name ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
 	module_name  = name;
-	signal->addr = photon->common->get_module_handle( module_name );
+	signal->addr = photon::get( )->common->get_module_handle( module_name );
 	return this;
 }
 signal_builder_t* signal_builder_t::in_interface( const char* name ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
-	signal->addr = photon->common->get_interface( module_name, name );
+	signal->addr = photon::get( )->common->get_interface( module_name, name );
 	return this;
 }
 signal_builder_t* signal_builder_t::at_address( void* address ) {
@@ -61,7 +61,7 @@ signal_builder_t* signal_builder_t::from_vtable( size_t index ) {
 }
 signal_builder_t* signal_builder_t::from_pattern( const char* pattern ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
-	signal->addr = photon->common->pattern_scan( module_name, pattern );
+	signal->addr = photon::get( )->common->pattern_scan( module_name, pattern );
 	return this;
 }
 signal_builder_t* signal_builder_t::add_callback( e_callback_type type, void* fn ) {
@@ -75,11 +75,11 @@ signal_builder_t* signal_builder_t::remove_callback( e_callback_type type, void*
 	return this;
 }
 signal_builder_t* signal_builder_t::enable( ) {
-	photon->signal->enable( this );
+	photon::get( )->signal->enable( this );
 	return this;
 }
 signal_builder_t* signal_builder_t::disable( ) {
-	photon->signal->disable( this );
+	photon::get( )->signal->disable( this );
 	return this;
 }
 

@@ -27,23 +27,23 @@ e_return_action lock_cursor( e_callback_type type, signal_context_t* ctx ) {
 }
 
 e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
-	auto paint_mode = photon->signal->get_arg( ctx, 1 ).i32;
+	auto paint_mode = photon::get( )->signal->get_arg( ctx, 1 ).i32;
 
 	interfaces::surface->start_drawing( );
 
 	if ( paint_mode == paint_uipanels ) {
-		photon->input->poll_input( );  // XXX: not sure if this is the best place to call this?
+		photon::get( )->input->poll_input( );  // XXX: not sure if this is the best place to call this?
 
 		huds::draw( );
 
-		photon->common->post_event( &plugin, "paint" );
+		photon::get( )->common->post_event( "paint" );
 
-		if ( !interfaces::engine_client->con_is_visible( ) && photon->input->get_key_press( key_rshift ) ) {
+		if ( !interfaces::engine_client->con_is_visible( ) && photon::get( )->input->get_key_press( key_rshift ) ) {
 			gui::open  = !gui::open;
 			huds::edit = false;
 		}
 
-		if ( huds::edit && photon->input->get_key_press( key_escape ) ) {
+		if ( huds::edit && photon::get( )->input->get_key_press( key_escape ) ) {
 			gui::open  = true;
 			huds::edit = false;
 		}
@@ -63,7 +63,7 @@ e_return_action paint( e_callback_type type, signal_context_t* ctx ) {
 // block input to the game when photon's menu is open, only works in game, not in the menu
 e_return_action in_key_event( e_callback_type type, signal_context_t* ctx ) {
 	if ( gui::open || huds::edit ) {
-		photon->signal->set_return( ctx, u_data{ 0 } );
+		photon::get( )->signal->set_return( ctx, u_data{ 0 } );
 
 		return e_return_action::Supercede;
 	}
@@ -73,7 +73,7 @@ e_return_action in_key_event( e_callback_type type, signal_context_t* ctx ) {
 
 // block input to the menu, vgui has its own input system for some reason, so we have to hook another function
 e_return_action update_button_state( e_callback_type type, signal_context_t* ctx ) {
-	address_t ecx = photon->signal->get_arg( ctx, 0 ).p;
+	address_t ecx = photon::get( )->signal->get_arg( ctx, 0 ).p;
 
 	if ( gui::open || huds::edit ) {
 		/*
@@ -94,10 +94,10 @@ e_return_action update_button_state( e_callback_type type, signal_context_t* ctx
 static color_t* hue_tex;
 
 void gui::create_fonts( ) {
-	photon->render->create_font( framework::fonts::smaller, "Roboto Light", 18, true, fontflag_antialias );
-	photon->render->create_font( framework::fonts::normal, "Roboto Light", 20, true, fontflag_antialias );
-	photon->render->create_font( framework::fonts::title, "Roboto Light", 24, true, fontflag_antialias );
-	photon->render->create_font( framework::fonts::bigtitle, "Roboto Light", 28, true, fontflag_antialias );
+	photon::get( )->render->create_font( framework::fonts::smaller, "Roboto Light", 18, true, fontflag_antialias );
+	photon::get( )->render->create_font( framework::fonts::normal, "Roboto Light", 20, true, fontflag_antialias );
+	photon::get( )->render->create_font( framework::fonts::title, "Roboto Light", 24, true, fontflag_antialias );
+	photon::get( )->render->create_font( framework::fonts::bigtitle, "Roboto Light", 28, true, fontflag_antialias );
 }
 
 bool gui::initialize( ) {
@@ -105,18 +105,18 @@ bool gui::initialize( ) {
 
 	gui::create_fonts( );
 
-	photon->render->load_texture_png( "photon_icon", resource::icons::photon, 50, 50, sizeof( resource::icons::photon ) );
-	photon->render->load_texture_png( "photon_list", resource::icons::list, 32, 32, sizeof( resource::icons::list ) );
-	photon->render->load_texture_png( "photon_gear", resource::icons::gear, 32, 32, sizeof( resource::icons::gear ) );
-	photon->render->load_texture_png( "photon_left_arrow", resource::icons::left_arrow, 32, 32, sizeof( resource::icons::left_arrow ) );
-	photon->render->load_texture_png( "photon_arrows", resource::icons::arrows, 32, 32, sizeof( resource::icons::arrows ) );
-	photon->render->load_texture_png( "photon_download", resource::icons::download, 16, 16, sizeof( resource::icons::download ) );
-	photon->render->load_texture_png( "photon_upload", resource::icons::upload, 16, 16, sizeof( resource::icons::upload ) );
-	photon->render->load_texture_png( "photon_trash_can", resource::icons::trash_can, 16, 16, sizeof( resource::icons::trash_can ) );
-	photon->render->load_texture_png( "photon_plus", resource::icons::plus, 16, 16, sizeof( resource::icons::plus ) );
-	photon->render->load_texture_png( "photon_refresh", resource::icons::refresh, 16, 16, sizeof( resource::icons::refresh ) );
-	photon->render->load_texture_png( "photon_caret_down", resource::icons::caret_down, 8, 8, sizeof( resource::icons::caret_down ) );
-	photon->render->load_texture_png( "photon_caret_up", resource::icons::caret_up, 8, 8, sizeof( resource::icons::caret_up ) );
+	photon::get( )->render->load_texture_png( "photon_icon", resource::icons::photon, 50, 50, sizeof( resource::icons::photon ) );
+	photon::get( )->render->load_texture_png( "photon_list", resource::icons::list, 32, 32, sizeof( resource::icons::list ) );
+	photon::get( )->render->load_texture_png( "photon_gear", resource::icons::gear, 32, 32, sizeof( resource::icons::gear ) );
+	photon::get( )->render->load_texture_png( "photon_left_arrow", resource::icons::left_arrow, 32, 32, sizeof( resource::icons::left_arrow ) );
+	photon::get( )->render->load_texture_png( "photon_arrows", resource::icons::arrows, 32, 32, sizeof( resource::icons::arrows ) );
+	photon::get( )->render->load_texture_png( "photon_download", resource::icons::download, 16, 16, sizeof( resource::icons::download ) );
+	photon::get( )->render->load_texture_png( "photon_upload", resource::icons::upload, 16, 16, sizeof( resource::icons::upload ) );
+	photon::get( )->render->load_texture_png( "photon_trash_can", resource::icons::trash_can, 16, 16, sizeof( resource::icons::trash_can ) );
+	photon::get( )->render->load_texture_png( "photon_plus", resource::icons::plus, 16, 16, sizeof( resource::icons::plus ) );
+	photon::get( )->render->load_texture_png( "photon_refresh", resource::icons::refresh, 16, 16, sizeof( resource::icons::refresh ) );
+	photon::get( )->render->load_texture_png( "photon_caret_down", resource::icons::caret_down, 8, 8, sizeof( resource::icons::caret_down ) );
+	photon::get( )->render->load_texture_png( "photon_caret_up", resource::icons::caret_up, 8, 8, sizeof( resource::icons::caret_up ) );
 
 	// initialize hue gradient texture.
 	constexpr int tex_height{ 180 };
@@ -126,12 +126,12 @@ bool gui::initialize( ) {
 
 		hue_tex[ i ] = color_t::from_hsv( hue, 1.f, 1.f );
 	}
-	photon->render->load_texture_raw( "photon_hue_gradient", ( uint8_t* ) hue_tex, 1, tex_height );
+	photon::get( )->render->load_texture_raw( "photon_hue_gradient", ( uint8_t* ) hue_tex, 1, tex_height );
 
-	photon->signal->get( "CMatSystemSurface::LockCursor" )->add_callback( e_callback_type::Pre, &lock_cursor );
-	photon->signal->get( "CEngineVGui::Paint" )->add_callback( e_callback_type::Post, &paint );
-	photon->signal->get( "CHLClient::IN_KeyEvent" )->add_callback( e_callback_type::Pre, &in_key_event );
-	photon->signal->get( "CEngineVGui::UpdateButtonState" )->add_callback( e_callback_type::Pre, &update_button_state );
+	photon::get( )->signal->get( "CMatSystemSurface::LockCursor" )->add_callback( e_callback_type::Pre, &lock_cursor );
+	photon::get( )->signal->get( "CEngineVGui::Paint" )->add_callback( e_callback_type::Post, &paint );
+	photon::get( )->signal->get( "CHLClient::IN_KeyEvent" )->add_callback( e_callback_type::Pre, &in_key_event );
+	photon::get( )->signal->get( "CEngineVGui::UpdateButtonState" )->add_callback( e_callback_type::Pre, &update_button_state );
 
 	return true;
 }
@@ -139,14 +139,14 @@ bool gui::initialize( ) {
 void gui::uninitialize( ) {
 	SAFE_DELETE_ARRAY( hue_tex );
 
-	photon->render->destruct_font( framework::fonts::bigtitle );
-	photon->render->destruct_font( framework::fonts::title );
-	photon->render->destruct_font( framework::fonts::normal );
-	photon->render->destruct_font( framework::fonts::smaller );
+	photon::get( )->render->destruct_font( framework::fonts::bigtitle );
+	photon::get( )->render->destruct_font( framework::fonts::title );
+	photon::get( )->render->destruct_font( framework::fonts::normal );
+	photon::get( )->render->destruct_font( framework::fonts::smaller );
 }
 
 void gui::draw( ) {
-	const auto screen_size = photon->render->get_screen_size( );
+	const auto screen_size = photon::get( )->render->get_screen_size( );
 	const auto screen_half = screen_size / 2;
 
 	constexpr int tab_height = 56;
@@ -155,15 +155,15 @@ void gui::draw( ) {
 
 	static int tab = 1;
 
-	static photon_api::i_photon_mod* cur_mod;
+	static photon::i_mod* cur_mod;
 
 	// draw bg.
-	photon->render->draw_gradient( 0, 0, screen_size.x, screen_size.y, { 0, 0, 0, 200 }, { 32, 32, 32, 200 }, false );
+	photon::get( )->render->draw_gradient( 0, 0, screen_size.x, screen_size.y, { 0, 0, 0, 200 }, { 32, 32, 32, 200 }, false );
 
 	// draw title.
-	const auto title_size = photon->render->get_text_size( framework::fonts::bigtitle, "PHOTON" );
-	photon->render->draw_texture( screen_half.x - title_size.x / 2 - 25 - 4, screen_half.y - 90, 50, 50, "photon_icon" );
-	photon->render->draw_text( screen_half.x + 25 + 4, screen_half.y - 80, framework::fonts::bigtitle, framework::colors::white, true, "PHOTON" );
+	const auto title_size = photon::get( )->render->get_text_size( framework::fonts::bigtitle, "PHOTON" );
+	photon::get( )->render->draw_texture( screen_half.x - title_size.x / 2 - 25 - 4, screen_half.y - 90, 50, 50, "photon_icon" );
+	photon::get( )->render->draw_text( screen_half.x + 25 + 4, screen_half.y - 80, framework::fonts::bigtitle, framework::colors::white, true, "PHOTON" );
 
 	// menu begin.
 	framework::begin( menu_pos, menu_size );

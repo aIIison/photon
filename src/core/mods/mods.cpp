@@ -18,11 +18,11 @@ bool mods::load( const char* name ) {
 #endif
 
 	if ( lib ) {
-		using create_mod_fn = photon_api::i_photon_mod* ( * ) ( );
-		const auto fn       = util::get_sym_addr< create_mod_fn >( lib, "create_mod" );
+		using create_mod_fn = photon::i_mod* ( * ) ( photon::factory_t );
+		const auto fn       = util::get_sym_addr< create_mod_fn >( lib, "initialize_photon_mod" );
 
 		if ( fn ) {
-			auto mod = fn( );
+			auto mod = fn( photon::get );
 
 			if ( !mod )
 				return false;
@@ -41,9 +41,9 @@ bool mods::load( const char* name ) {
 	}
 
 #ifdef _WIN32
-	photon->common->log_warn( "failed to load library `%s` (%lu).\n", name, GetLastError( ) );
+	photon::get( )->common->log_warn( "failed to load library `%s` (%lu).\n", name, GetLastError( ) );
 #else
-	photon->common->log_warn( "failed to load library `%s` (%s).\n", name, dlerror( ) );
+	photon::get( )->common->log_warn( "failed to load library `%s` (%s).\n", name, dlerror( ) );
 #endif
 
 	return false;
@@ -102,7 +102,7 @@ void mods::unloadall( ) {
 bool mods::enable( mod_info_t* mod ) {
 	bool result = false;
 	if ( !mod->is_loaded ) {
-		result         = mod->ptr->load( photon );
+		result         = mod->ptr->load( );
 		mod->is_loaded = true;
 	} else
 		return false;
@@ -126,25 +126,18 @@ void mods::disable( mod_info_t* mod ) {
 }
 
 void mods::print( ) {
-	photon->common->log( "loaded photon mods (%d):\n", mod_list.size( ) );
+	photon::get( )->common->log( "loaded photon mods (%d):\n", mod_list.size( ) );
 	for ( const auto& mod : mod_list ) {
 		const char* status = mod.second.is_loaded ? "enabled" : "disabled";
 		const auto  info   = mod.second.ptr->get_info( );
 
-		photon->common->log( "%s: %s@%s (%s)\n", mod.first.c_str( ), info.name, info.version, status );
+		photon::get( )->common->log( "%s: %s@%s (%s)\n", mod.first.c_str( ), info.name, info.version, status );
 	}
 }
 
-void mods::post_event( void* sender, const char* msg ) {
-	auto msg_s = std::string( msg );
-
-	if ( sender != &plugin ) {
-		const auto mod = reinterpret_cast< photon_api::i_photon_mod* >( sender );
-		msg_s          = std::string( mod->get_info( ).name ) + std::string( ":" ) + msg_s;
-	}
-
+void mods::post_event( const char* msg ) {
 	for ( const auto& mod : mod_list ) {
 		if ( mod.second.is_loaded )
-			mod.second.ptr->on_event( msg_s.c_str( ) );
+			mod.second.ptr->on_event( msg );
 	}
 }

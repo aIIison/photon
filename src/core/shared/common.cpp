@@ -33,8 +33,8 @@ void c_common::log_warn( const char* fmt, ... ) {
 	interfaces::console->warning( str.c_str( ) );
 	util::console::log( PRINT_RED "[!] %s", str.c_str( ) );
 }
-void c_common::post_event( void* sender, const char* msg ) {
-	mods::post_event( sender, msg );
+void c_common::post_event( const char* msg ) {
+	mods::post_event( msg );
 }
 
 void* c_common::get_interface( const char* module_name, const char* interface_name ) {
@@ -58,7 +58,7 @@ bool c_common::is_coop( ) {
 	if ( interfaces::game_rules && *interfaces::game_rules )
 		return ( *interfaces::game_rules )->is_multiplayer( );
 
-	static auto sv_portal_players = photon->con->find_var( "sv_portal_players" );
+	static auto sv_portal_players = photon::get( )->con->find_var( "sv_portal_players" );
 	return sv_portal_players->get_int( ) == 2;
 }
 bool c_common::is_orange( ) {
