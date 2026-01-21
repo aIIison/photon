@@ -13,6 +13,8 @@ namespace huds {
 
 	inline bool edit = false;
 
+	inline photon::i_hud* cur_hud;
+
 	void draw( );
 	void draw_ui( );
 }  // namespace huds

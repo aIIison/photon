@@ -22,8 +22,6 @@ public:
 	virtual void reg( const char* name, photon::i_hud* hud );
 	virtual void unreg( const char* name );
 
-	virtual void draw_begin( photon::i_hud* hud );
-	virtual void draw_end( );
 	virtual void draw_filled_rect( int x, int y, int w, int h, const color_t& color );
 	virtual void draw_outlined_rect( int x, int y, int w, int h, const color_t& color, int stroke_width = 1 );
 	virtual void draw_line( int x, int y, int w, int h, const color_t& color );

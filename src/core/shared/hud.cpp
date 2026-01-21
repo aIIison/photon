@@ -13,14 +13,12 @@ void c_hud::unreg( const char* name ) {
 	huds::huds.erase( name );
 }
 
-static photon::i_hud* cur_hud;
-
 static inline void setup_context( int& x, int& y, int w, int h ) {
-	cur_hud->bounds.x = std::fmax( cur_hud->bounds.x, x + w );
-	cur_hud->bounds.y = std::fmax( cur_hud->bounds.y, y + h );
+	huds::cur_hud->bounds.x = std::fmax( huds::cur_hud->bounds.x, x + w );
+	huds::cur_hud->bounds.y = std::fmax( huds::cur_hud->bounds.y, y + h );
 
-	const auto pos    = photon::get( )->render->to_screen( cur_hud->pos );
-	const auto anchor = cur_hud->anchor * cur_hud->bounds;
+	const auto pos    = photon::get( )->render->to_screen( huds::cur_hud->pos );
+	const auto anchor = huds::cur_hud->anchor * huds::cur_hud->bounds;
 
 	const auto screen_pos = pos - anchor;
 
@@ -28,14 +26,8 @@ static inline void setup_context( int& x, int& y, int w, int h ) {
 	y += screen_pos.y;
 }
 
-void c_hud::draw_begin( photon::i_hud* hud ) {
-	cur_hud = hud;
-}
-void c_hud::draw_end( ) {
-	cur_hud = nullptr;
-}
 void c_hud::draw_filled_rect( int x, int y, int w, int h, const color_t& color ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, w, h );
@@ -43,7 +35,7 @@ void c_hud::draw_filled_rect( int x, int y, int w, int h, const color_t& color )
 	photon::get( )->render->draw_filled_rect( x, y, w, h, color );
 }
 void c_hud::draw_outlined_rect( int x, int y, int w, int h, const color_t& color, int stroke_width ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, w, h );
@@ -51,7 +43,7 @@ void c_hud::draw_outlined_rect( int x, int y, int w, int h, const color_t& color
 	photon::get( )->render->draw_outlined_rect( x, y, w, h, color, stroke_width );
 }
 void c_hud::draw_line( int x, int y, int w, int h, const color_t& color ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, w, h );
@@ -59,7 +51,7 @@ void c_hud::draw_line( int x, int y, int w, int h, const color_t& color ) {
 	photon::get( )->render->draw_line( x, y, w, h, color );
 }
 void c_hud::draw_polygon( int n, vertex_t* vertices, const color_t& color ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	// calculate bounds.
@@ -88,7 +80,7 @@ void c_hud::draw_polygon( int n, vertex_t* vertices, const color_t& color ) {
 	photon::get( )->render->draw_polygon( n, vertices, color );
 }
 void c_hud::draw_rounded_rect( int x, int y, int w, int h, const color_t& color, int rounding ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, w, h );
@@ -96,7 +88,7 @@ void c_hud::draw_rounded_rect( int x, int y, int w, int h, const color_t& color,
 	photon::get( )->render->draw_rounded_rect( x, y, w, h, color, rounding );
 }
 void c_hud::draw_circle( int x, int y, int radius, const color_t& color ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, radius * 2, radius * 2 );
@@ -107,7 +99,7 @@ void c_hud::draw_circle( int x, int y, int radius, const color_t& color ) {
 	photon::get( )->render->draw_circle( x, y, radius, color );
 }
 void c_hud::draw_text( int x, int y, h_font font, const color_t& color, bool center, const char* text ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	const auto text_size = photon::get( )->render->get_text_size( font, text );
@@ -117,7 +109,7 @@ void c_hud::draw_text( int x, int y, h_font font, const color_t& color, bool cen
 	photon::get( )->render->draw_text( x, y, font, color, center, text );
 }
 void c_hud::draw_texture( int x, int y, int w, int h, const char* texture, const color_t& color ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, w, h );
@@ -125,7 +117,7 @@ void c_hud::draw_texture( int x, int y, int w, int h, const char* texture, const
 	photon::get( )->render->draw_texture( x, y, w, h, texture, color );
 }
 void c_hud::draw_gradient( int x, int y, int w, int h, const color_t& color1, const color_t& color2, bool horizontal ) {
-	if ( !cur_hud )
+	if ( !huds::cur_hud )
 		return;
 
 	setup_context( x, y, w, h );

@@ -15,14 +15,10 @@ void huds::uninitialize( ) {
 }
 
 void c_example_hud::draw( ) {
-	photon::get( )->hud->draw_begin( this );
-
 	vertex_t verts[]{
 		{ { 100, 0 } },
 		{ { 300, 300 } },
 		{ { 0, 200 } }
 	};
 	photon::get( )->hud->draw_polygon( 3, verts, { } );
-
-	photon::get( )->hud->draw_end( );
 }

@@ -161,6 +161,7 @@ static void align_hud_element( photon::i_hud* hud ) {
 
 void huds::draw( ) {
 	for ( const auto& [ _, hud ] : huds ) {
+		huds::cur_hud = hud;
 		hud->draw( );
 
 		if ( hud->is_splitscreen( ) && photon::get( )->common->is_splitscreen( ) ) {
@@ -174,6 +175,7 @@ void huds::draw( ) {
 			hud->draw( );
 			hud->pos[ axis ] -= offset;
 		}
+		huds::cur_hud = nullptr;
 	}
 }
 
