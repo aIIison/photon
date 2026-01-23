@@ -20,7 +20,6 @@ namespace photon {
 		c_hud*    hud;     // register huds and thuds.
 		c_render* render;  // wrapper around source's surface interface.
 		c_input*  input;   // wrapper around source's inputsystem interface.
-		c_menu*   menu;    // photon's own menu framework.
 		c_config* config;  // photon's config system.
 	};
 
@@ -32,11 +31,11 @@ namespace photon {
 
 	class i_mod {
 	public:
-		virtual bool       load( )                     = 0;  // called on mod load, return if load was successful or not.
-		virtual void       unload( )                   = 0;  // called on mod unload.
-		virtual void       on_event( const char* msg ) = 0;  // callback for all events, `msg` contains event name.
-		virtual mod_info_t get_info( )                 = 0;  // return mod info here.
-		virtual void       paint_menu( )               = 0;  // called every frame when mod's settings menu is shown.
+		virtual bool       load( )                           = 0;  // called on mod load, return if load was successful or not.
+		virtual void       unload( )                         = 0;  // called on mod unload.
+		virtual void       on_event( const char* msg )       = 0;  // callback for all events, `msg` contains event name.
+		virtual mod_info_t get_info( )                       = 0;  // return mod info here.
+		virtual void       paint_menu( c_menu_context* ctx ) = 0;  // called every frame when mod's settings menu is shown.
 	};
 
 	typedef c_shared* ( *factory_t )( );

@@ -41,14 +41,13 @@ bool c_photon::load( create_interface_fn interface_factory, create_interface_fn 
 	info = new plugin_info_t( );
 
 	photon::get            = &photon_factory;
-	photon::get( )->common = new c_common( );
-	photon::get( )->con    = new c_con( );
-	photon::get( )->signal = new c_signal( );
-	photon::get( )->hud    = new c_hud( );
-	photon::get( )->render = new c_render( );
-	photon::get( )->input  = new c_input( );
-	photon::get( )->menu   = new c_menu( );
-	photon::get( )->config = new c_config( );
+	photon::get( )->common = new photon::c_common( );
+	photon::get( )->con    = new photon::c_con( );
+	photon::get( )->signal = new photon::c_signal( );
+	photon::get( )->hud    = new photon::c_hud( );
+	photon::get( )->render = new photon::c_render( );
+	photon::get( )->input  = new photon::c_input( );
+	photon::get( )->config = new photon::c_config( );
 
 #ifdef _DEBUG
 	debugger::initialize( );
@@ -145,7 +144,6 @@ void c_photon::unload( ) {
 	debugger::uninitialize( );
 
 	SAFE_DELETE( photon::get( )->config );
-	SAFE_DELETE( photon::get( )->menu );
 	SAFE_DELETE( photon::get( )->input );
 	SAFE_DELETE( photon::get( )->render );
 	SAFE_DELETE( photon::get( )->hud );

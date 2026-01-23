@@ -155,7 +155,8 @@ void gui::draw( ) {
 
 	static int tab = 1;
 
-	static photon::i_mod* cur_mod;
+	static photon::i_mod*         cur_mod;
+	static photon::c_menu_context ctx;
 
 	// draw bg.
 	photon::get( )->render->draw_gradient( 0, 0, screen_size.x, screen_size.y, { 0, 0, 0, 200 }, { 32, 32, 32, 200 }, false );
@@ -214,7 +215,7 @@ void gui::draw( ) {
 			if ( cur_mod ) {
 				framework::separator( util::ssprintf( "%s Settings", cur_mod->get_info( ).name ).c_str( ) );
 
-				cur_mod->paint_menu( );
+				cur_mod->paint_menu( &ctx );
 			}
 		}
 	}

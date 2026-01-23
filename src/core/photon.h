@@ -9,6 +9,8 @@
 
 #define SAFE_UNLOAD_DELAY 33
 
+using namespace photon;
+
 struct plugin_info_t {
 	c_plugin* ptr;
 	int       index;

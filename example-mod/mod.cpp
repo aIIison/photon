@@ -53,16 +53,16 @@ photon::mod_info_t c_example_mod::get_info( ) {
 	};
 }
 
-void c_example_mod::paint_menu( ) {
-	photon::get( )->menu->toggle( config::example_boolean, "Example Toggle" );
-	photon::get( )->menu->slider( config::example_integer, 0, 100, "Example Slider" );
-	photon::get( )->menu->sliderf( config::example_float, 0.f, 10.f, "Example Sliderf" );
-	photon::get( )->menu->colorpicker( config::example_color, "Example Colorpicker" );
+void c_example_mod::paint_menu( photon::c_menu_context* ctx ) {
+	ctx->toggle( config::example_boolean, "Example Toggle" );
+	ctx->slider( config::example_integer, 0, 100, "Example Slider" );
+	ctx->sliderf( config::example_float, 0.f, 10.f, "Example Sliderf" );
+	ctx->colorpicker( config::example_color, "Example Colorpicker" );
 
-	photon::get( )->menu->separator( "Example Separator" );
+	ctx->separator( "Example Separator" );
 
 	static const char* values[] = { "Value 1", "Value 2", "Value 3" };
-	photon::get( )->menu->combo( config::example_combo_value, values, 3, "Example Combo" );
-	photon::get( )->menu->multicombo( config::example_mcombo_value, values, 3, "Example Multicombo" );
-	photon::get( )->menu->textbox( config::example_textbox_value, "Example Textbox" );
+	ctx->combo( config::example_combo_value, values, 3, "Example Combo" );
+	ctx->multicombo( config::example_mcombo_value, values, 3, "Example Multicombo" );
+	ctx->textbox( config::example_textbox_value, "Example Textbox" );
 }

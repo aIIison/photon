@@ -8,5 +8,5 @@ public:
 	virtual void               unload( );
 	virtual void               on_event( const char* msg );
 	virtual photon::mod_info_t get_info( );
-	virtual void               paint_menu( );
+	virtual void               paint_menu( photon::c_menu_context* ctx );
 };

@@ -8,6 +8,6 @@ namespace huds {
 }  // namespace huds
 
 class c_example_hud : public photon::i_hud {
-	virtual void draw( );
+	virtual void draw( photon::c_hud_context* ctx );
 	virtual bool is_splitscreen( ) { return true; };
 };

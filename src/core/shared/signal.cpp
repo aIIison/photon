@@ -7,51 +7,51 @@
 #include <dynohook/manager.h>
 #include <unordered_map>
 
-static std::unordered_map< std::string, signal_builder_t* > signals;
+static std::unordered_map< std::string, photon::c_signal_builder* > signals;
 
 static const char* module_name;
 
 struct signal_t {
-	void*                      addr;
-	e_data_type                return_type{ };
-	e_callconv                 callconv{ };
-	std::vector< e_data_type > params{ };
+	void*                              addr;
+	photon::e_data_type                return_type{ };
+	photon::e_callconv                 callconv{ };
+	std::vector< photon::e_data_type > params{ };
 };
 
-signal_builder_t* signal_builder_t::with_return_type( e_data_type type ) {
+photon::c_signal_builder* photon::c_signal_builder::with_return_type( e_data_type type ) {
 	auto signal         = reinterpret_cast< signal_t* >( this->signal );
 	signal->return_type = type;
 	return this;
 }
-signal_builder_t* signal_builder_t::with_callconv( e_callconv callconv ) {
+photon::c_signal_builder* photon::c_signal_builder::with_callconv( e_callconv callconv ) {
 #ifdef _WIN32
 	auto signal      = reinterpret_cast< signal_t* >( this->signal );
 	signal->callconv = callconv;
 #endif
 	return this;
 }
-signal_builder_t* signal_builder_t::with_parameters( const std::vector< e_data_type >& params ) {
+photon::c_signal_builder* photon::c_signal_builder::with_parameters( const std::vector< e_data_type >& params ) {
 	auto signal    = reinterpret_cast< signal_t* >( this->signal );
 	signal->params = params;
 	return this;
 }
-signal_builder_t* signal_builder_t::in_module( const char* name ) {
+photon::c_signal_builder* photon::c_signal_builder::in_module( const char* name ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
 	module_name  = name;
 	signal->addr = photon::get( )->common->get_module_handle( module_name );
 	return this;
 }
-signal_builder_t* signal_builder_t::in_interface( const char* name ) {
+photon::c_signal_builder* photon::c_signal_builder::in_interface( const char* name ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
 	signal->addr = photon::get( )->common->get_interface( module_name, name );
 	return this;
 }
-signal_builder_t* signal_builder_t::at_address( void* address ) {
+photon::c_signal_builder* photon::c_signal_builder::at_address( void* address ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
 	signal->addr = address;
 	return this;
 }
-signal_builder_t* signal_builder_t::from_vtable( size_t index ) {
+photon::c_signal_builder* photon::c_signal_builder::from_vtable( size_t index ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
 	signal->addr = reinterpret_cast< void* >( ( *reinterpret_cast< int** >( signal->addr ) )[ index ] );
 #ifdef _WIN32
@@ -59,44 +59,44 @@ signal_builder_t* signal_builder_t::from_vtable( size_t index ) {
 #endif
 	return this;
 }
-signal_builder_t* signal_builder_t::from_pattern( const char* pattern ) {
+photon::c_signal_builder* photon::c_signal_builder::from_pattern( const char* pattern ) {
 	auto signal  = reinterpret_cast< signal_t* >( this->signal );
 	signal->addr = photon::get( )->common->pattern_scan( module_name, pattern );
 	return this;
 }
-signal_builder_t* signal_builder_t::add_callback( e_callback_type type, void* fn ) {
+photon::c_signal_builder* photon::c_signal_builder::add_callback( e_callback_type type, void* fn ) {
 	auto signal = reinterpret_cast< signal_t* >( this->signal );
 	dyno::HookManager::Get( ).findDetour( signal->addr )->addCallback( ( dyno::CallbackType ) type, ( dyno::CallbackHandler ) fn );
 	return this;
 }
-signal_builder_t* signal_builder_t::remove_callback( e_callback_type type, void* fn ) {
+photon::c_signal_builder* photon::c_signal_builder::remove_callback( e_callback_type type, void* fn ) {
 	auto signal = reinterpret_cast< signal_t* >( this->signal );
 	dyno::HookManager::Get( ).findDetour( signal->addr )->removeCallback( ( dyno::CallbackType ) type, ( dyno::CallbackHandler ) fn );
 	return this;
 }
-signal_builder_t* signal_builder_t::enable( ) {
+photon::c_signal_builder* photon::c_signal_builder::enable( ) {
 	photon::get( )->signal->enable( this );
 	return this;
 }
-signal_builder_t* signal_builder_t::disable( ) {
+photon::c_signal_builder* photon::c_signal_builder::disable( ) {
 	photon::get( )->signal->disable( this );
 	return this;
 }
 
-signal_builder_t* c_signal::create( const char* name ) {
-	auto signal    = new signal_builder_t( );
+photon::c_signal_builder* photon::c_signal::create( const char* name ) {
+	auto signal    = new c_signal_builder( );
 	signal->signal = new signal_t( );
 	signals.insert( std::make_pair( std::string( name ), signal ) );
 	return signal;
 }
-void c_signal::remove( const char* name ) {
+void photon::c_signal::remove( const char* name ) {
 	auto signal = get( name );
 	signal->disable( );
 	delete signal->signal;
 	delete signal;
 	signals.erase( name );
 }
-void c_signal::enable( signal_builder_t* signal ) {
+void photon::c_signal::enable( photon::c_signal_builder* signal ) {
 	auto data = reinterpret_cast< signal_t* >( signal->signal );
 
 	std::vector< dyno::DataObject > params;
@@ -178,7 +178,7 @@ void c_signal::enable( signal_builder_t* signal ) {
 		}
 	}
 }
-void c_signal::disable( signal_builder_t* signal ) {
+void photon::c_signal::disable( photon::c_signal_builder* signal ) {
 	auto data = reinterpret_cast< signal_t* >( signal->signal );
 	dyno::HookManager::Get( ).unhookDetour( data->addr );
 
@@ -191,27 +191,27 @@ void c_signal::disable( signal_builder_t* signal ) {
 		}
 	}
 }
-signal_builder_t* c_signal::get( const char* name ) {
+photon::c_signal_builder* photon::c_signal::get( const char* name ) {
 	return signals[ name ];
 }
-void c_signal::remove_all( ) {
+void photon::c_signal::remove_all( ) {
 	dyno::HookManager::Get( ).unhookAll( );
 	signals.clear( );
 }
 
-u_data c_signal::get_arg( signal_context_t* ctx, size_t index ) {
+photon::u_data photon::c_signal::get_arg( signal_context_t* ctx, size_t index ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
 	return hook->getArgument< u_data >( index );
 }
-void c_signal::set_arg( signal_context_t* ctx, size_t index, u_data value ) {
+void photon::c_signal::set_arg( signal_context_t* ctx, size_t index, u_data value ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
 	return hook->setArgument< void* >( index, value.p );
 }
-u_data c_signal::get_return( signal_context_t* ctx ) {
+photon::u_data photon::c_signal::get_return( signal_context_t* ctx ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
 	return hook->getReturn< u_data >( );
 }
-void c_signal::set_return( signal_context_t* ctx, u_data value ) {
+void photon::c_signal::set_return( signal_context_t* ctx, u_data value ) {
 	auto hook = reinterpret_cast< dyno::IHook* >( ctx );
 	return hook->setReturn< void* >( value.p );
 }

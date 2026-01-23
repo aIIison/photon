@@ -18,39 +18,39 @@
 	std::string str( buf );                         \
 	free( buf );
 
-void c_common::log( const char* fmt, ... ) {
+void photon::c_common::log( const char* fmt, ... ) {
 	HANDLE_VA( );
 	interfaces::console->msg( str.c_str( ) );
 	util::console::log( "[+] %s", str.c_str( ) );
 }
-void c_common::log( const color_t& clr, const char* fmt, ... ) {
+void photon::c_common::log( const color_t& clr, const char* fmt, ... ) {
 	HANDLE_VA( );
 	interfaces::console->color_msg( clr, str.c_str( ) );
 	util::console::log( PRINT_GREEN "[+] %s", str.c_str( ) );
 }
-void c_common::log_warn( const char* fmt, ... ) {
+void photon::c_common::log_warn( const char* fmt, ... ) {
 	HANDLE_VA( );
 	interfaces::console->warning( str.c_str( ) );
 	util::console::log( PRINT_RED "[!] %s", str.c_str( ) );
 }
-void c_common::post_event( const char* msg ) {
+void photon::c_common::post_event( const char* msg ) {
 	mods::post_event( msg );
 }
 
-void* c_common::get_interface( const char* module_name, const char* interface_name ) {
+void* photon::c_common::get_interface( const char* module_name, const char* interface_name ) {
 	return util::get_interface( module_name, interface_name );
 }
-void* c_common::pattern_scan( const char* module_name, const char* signature ) {
+void* photon::c_common::pattern_scan( const char* module_name, const char* signature ) {
 	return util::pattern_scan( module_name, signature );
 }
-void* c_common::get_module_handle( const char* module_name ) {
+void* photon::c_common::get_module_handle( const char* module_name ) {
 	return util::get_module_handle( module_name );
 }
 
-int c_common::get_slot( ) {
+int photon::c_common::get_slot( ) {
 	return interfaces::engine_client->get_local_player( );
 }
-bool c_common::is_coop( ) {
+bool photon::c_common::is_coop( ) {
 	// FIXME: unfinished
 	if ( !strlen( get_current_map( ) ) )
 		return false;
@@ -61,7 +61,7 @@ bool c_common::is_coop( ) {
 	static auto sv_portal_players = photon::get( )->con->find_var( "sv_portal_players" );
 	return sv_portal_players->get_int( ) == 2;
 }
-bool c_common::is_orange( ) {
+bool photon::c_common::is_orange( ) {
 	// FIXME: unfinished
 	static bool is_orange;
 
@@ -69,7 +69,7 @@ bool c_common::is_orange( ) {
 
 	return is_orange;
 }
-bool c_common::is_splitscreen( ) {
+bool photon::c_common::is_splitscreen( ) {
 	// FIXME: unfinished
 	if ( !is_coop( ) )
 		return false;
@@ -82,12 +82,12 @@ bool c_common::is_splitscreen( ) {
 
 	return false;
 }
-const char* c_common::get_current_map( ) {
+const char* photon::c_common::get_current_map( ) {
 	return interfaces::engine_client->get_level_name_short( );
 }
-c_host_state* c_common::get_host_state( ) {
+c_host_state* photon::c_common::get_host_state( ) {
 	return interfaces::host_state;
 }
-void* c_common::get_client_entity( int entnum ) {
+void* photon::c_common::get_client_entity( int entnum ) {
 	return interfaces::entity_list->get_client_entity( entnum );
 }

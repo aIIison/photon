@@ -160,9 +160,10 @@ static void align_hud_element( photon::i_hud* hud ) {
 }
 
 void huds::draw( ) {
+	static photon::c_hud_context ctx;
 	for ( const auto& [ _, hud ] : huds ) {
 		huds::cur_hud = hud;
-		hud->draw( );
+		hud->draw( &ctx );
 
 		if ( hud->is_splitscreen( ) && photon::get( )->common->is_splitscreen( ) ) {
 			const auto  screen_size      = photon::get( )->render->get_screen_size( );
@@ -172,7 +173,7 @@ void huds::draw( ) {
 			auto offset = photon::get( )->render->normalize( screen_size / 2 )[ axis ];
 
 			hud->pos[ axis ] += offset;
-			hud->draw( );
+			hud->draw( &ctx );
 			hud->pos[ axis ] -= offset;
 		}
 		huds::cur_hud = nullptr;

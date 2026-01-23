@@ -14,11 +14,11 @@ void huds::uninitialize( ) {
 	photon::get( )->hud->unreg( "example_hud" );
 }
 
-void c_example_hud::draw( ) {
+void c_example_hud::draw( photon::c_hud_context* ctx ) {
 	vertex_t verts[]{
 		{ { 100, 0 } },
 		{ { 300, 300 } },
 		{ { 0, 200 } }
 	};
-	photon::get( )->hud->draw_polygon( 3, verts, { } );
+	ctx->draw_polygon( 3, verts, { } );
 }

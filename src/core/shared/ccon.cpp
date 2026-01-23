@@ -9,7 +9,7 @@
 static std::unordered_map< std::string, con_command* >          cmds;
 static std::unordered_map< std::string, fn_command_callback_t > hooked_cbks;
 
-con_command* c_con::create_cmd( const char* name, fn_command_callback_t cbk, const char* help_string, int flags ) {
+con_command* photon::c_con::create_cmd( const char* name, fn_command_callback_t cbk, const char* help_string, int flags ) {
 	// use the game's memory allocator
 	auto cmd = reinterpret_cast< con_command* >( interfaces::mem_alloc->alloc( sizeof( con_command ) ) );
 	memset( cmd, 0, sizeof( con_command ) );
@@ -34,7 +34,7 @@ con_command* c_con::create_cmd( const char* name, fn_command_callback_t cbk, con
 
 	return cmd;
 }
-void c_con::destruct_cmd( const char* name ) {
+void photon::c_con::destruct_cmd( const char* name ) {
 	if ( !cmds.count( name ) )
 		return;
 
@@ -47,7 +47,7 @@ void c_con::destruct_cmd( const char* name ) {
 	cmds.erase( name );
 }
 
-void c_con::hook_cmd( const char* name, fn_command_callback_t detour ) {
+void photon::c_con::hook_cmd( const char* name, fn_command_callback_t detour ) {
 	auto cmd = reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
 
 	if ( !cmd )
@@ -56,7 +56,7 @@ void c_con::hook_cmd( const char* name, fn_command_callback_t detour ) {
 	hooked_cbks.insert( std::make_pair( name, cmd->fn_command_callback ) );
 	cmd->fn_command_callback = detour;
 }
-void c_con::unhook_cmd( const char* name ) {
+void photon::c_con::unhook_cmd( const char* name ) {
 	auto cmd      = reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
 	auto original = hooked_cbks[ name ];
 	hooked_cbks.erase( name );
@@ -67,10 +67,10 @@ void c_con::unhook_cmd( const char* name ) {
 	cmd->fn_command_callback = original;
 }
 
-con_var* c_con::find_var( const char* name ) {
+con_var* photon::c_con::find_var( const char* name ) {
 	return reinterpret_cast< con_var* >( interfaces::cvar->find_command_base( name ) );
 }
 
-con_command* c_con::find_cmd( const char* name ) {
+con_command* photon::c_con::find_cmd( const char* name ) {
 	return reinterpret_cast< con_command* >( interfaces::cvar->find_command_base( name ) );
 }

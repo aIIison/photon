@@ -97,7 +97,7 @@ public:
 	virtual void               unload( );
 	virtual void               on_event( const char* msg );
 	virtual photon::mod_info_t get_info( );
-	virtual void               paint_menu( );
+	virtual void               paint_menu( photon::c_menu_context* ctx );
 };
 
 /* mod.cpp */
@@ -106,7 +106,7 @@ public:
 EXPOSE_PHOTON_MOD( c_example_mod );
 
 bool c_example_mod::load( ) {
-	// allocate & initialize stuff etc.
+	// allocate & initialize stuff here etc.
 
 	photon::get( )->common->log("hey!\n");
 
@@ -129,7 +129,7 @@ photon::mod_info_t c_example_mod::get_info( ) {
 	};
 }
 
-void c_example_mod::paint_menu( ) {
-	// add controls to the menu here using functions from photon::get()->menu.
+void c_example_mod::paint_menu( c_menu_context* ctx ) {
+	// add controls to the menu here.
 }
 ```
